@@ -1,0 +1,20 @@
+# Core Django & REST Framework
+Django>=5.1,<6.0
+djangorestframework>=3.15,<4.0
+
+# PostgreSQL Database Adapter (Modern psycopg v3)
+psycopg[binary]>=3.2,<4.0
+
+# Security & CORS
+django-cors-headers>=4.4,<5.0
+
+# Image handling for models (Entreprise logo)
+Pillow>=10.0.0,<11.0.0
+
+# Environment Configuration
+python-dotenv>=1.0,<2.0
+
+# 2FA (Two-Factor Authentication)
+pyotp>=2.9.0
+qrcode>=8.0
+

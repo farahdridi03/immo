@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: 43 33% 95%;
+    --foreground: 24 10% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 24 10% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 24 10% 10%;
+
+    --primary: 24 6% 16%;
+    --primary-foreground: 43 38% 95%;
+
+    --secondary: 43 25% 90%;
+    --secondary-foreground: 24 10% 10%;
+
+    --muted: 42 20% 93%;
+    --muted-foreground: 25 5% 45%;
+
+    --accent: 43 28% 86%;
+    --accent-foreground: 24 10% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 40 18% 88%;
+    --input: 40 18% 88%;
+    --ring: 24 6% 16%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 24 10% 10%;
+    --foreground: 43 33% 95%;
+
+    --card: 24 8% 14%;
+    --card-foreground: 43 33% 95%;
+
+    --popover: 24 8% 14%;
+    --popover-foreground: 43 33% 95%;
+
+    --primary: 43 33% 95%;
+    --primary-foreground: 24 10% 10%;
+
+    --secondary: 24 6% 20%;
+    --secondary-foreground: 43 33% 95%;
+
+    --muted: 24 6% 20%;
+    --muted-foreground: 40 10% 70%;
+
+    --accent: 24 6% 20%;
+    --accent-foreground: 43 33% 95%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 24 6% 22%;
+    --input: 24 6% 22%;
+    --ring: 43 33% 95%;
+  }
+}
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+body {
+  background-color: #F7F4EC;
+  color: #1C1917;
+  min-height: 100vh;
+}
+
+/* Print / PDF Export Styles */
+@media print {
+  aside,
+  header,
+  nav,
+  button,
+  .print\:hidden,
+  .no-print {
+    display: none !important;
+  }
+
+  html,
+  body,
+  main,
+  div {
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+  }
+
+  body,
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .print\:block {
+    display: block !important;
+  }
+
+  .grid {
+    display: block !important;
+  }
+
+  .grid > * {
+    margin-bottom: 1.5rem !important;
+    width: 100% !important;
+  }
+
+  .card,
+  [class*="border"] {
+    border: 1px solid #d1d5db !important;
+    break-inside: avoid;
+  }
+}
