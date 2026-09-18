@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, Building2 } from "lucide-react";
+import { Eye, Edit, Trash2, Building2 } from "lucide-react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -121,17 +121,18 @@ export default function EntreprisesPage() {
                             {item.actif ? "Actif" : "Inactif"}
                           </Badge>
                         </td>
-                        <td className="px-4 py-3 text-right space-x-2">
-                          <Button size="sm" variant="outline" onClick={() => router.push(`/entreprises/${item.id}`)}>
-                            <Eye className="w-3.5 h-3.5 mr-1" />
-                            Voir
-                          </Button>
-                          <Button size="sm" variant="outline" onClick={() => router.push(`/entreprises/${item.id}/editer`)}>
-                            Éditer
-                          </Button>
-                          <Button size="sm" variant="destructive" onClick={() => handleDelete(item.id)}>
-                            Supprimer
-                          </Button>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50" title="Voir les détails" onClick={() => router.push(`/entreprises/${item.id}`)}>
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50" title="Éditer" onClick={() => router.push(`/entreprises/${item.id}/editer`)}>
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50" title="Supprimer" onClick={() => handleDelete(item.id)}>
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))}

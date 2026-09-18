@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { famillesApi } from "@/services/api/immobilisations";
 import type { Famille } from "@/types/api";
+import { Edit, Trash2 } from "lucide-react";
 
 export default function FamillesPage() {
   const [familles, setFamilles] = useState<Famille[]>([]);
@@ -134,13 +135,15 @@ export default function FamillesPage() {
                         <td className="px-4 py-3">
                           <Badge variant="outline">{item.entreprise_nom || "Entreprise"}</Badge>
                         </td>
-                        <td className="px-4 py-3 text-right space-x-2">
-                          <Button size="sm" variant="outline" onClick={() => handleOpenEdit(item)}>
-                            Éditer
-                          </Button>
-                          <Button size="sm" variant="destructive" onClick={() => handleDelete(item.id)}>
-                            Supprimer
-                          </Button>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50" title="Éditer" onClick={() => handleOpenEdit(item)}>
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50" title="Supprimer" onClick={() => handleDelete(item.id)}>
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))}

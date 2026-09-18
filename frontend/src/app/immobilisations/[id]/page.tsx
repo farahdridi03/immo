@@ -282,18 +282,6 @@ export default function ImmobilisationDetailPage({
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2 flex-wrap">
-          {item.qr_code_base64 && (
-            <Button
-              variant="outline"
-              onClick={handleDownloadQrCode}
-              className="flex items-center gap-2 bg-white shadow-2xs hover:bg-[#FAF8F2]"
-              title="Télécharger l'étiquette QR Code (PNG)"
-            >
-              <QrCode className="w-4 h-4 text-[#1C1917]" />
-              <span>Télécharger QR Code</span>
-            </Button>
-          )}
-
           <Button
             variant="outline"
             onClick={handleDownloadPDF}

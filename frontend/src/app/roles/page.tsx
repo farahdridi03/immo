@@ -509,21 +509,24 @@ export default function RolesPermissionsUsersPage() {
                                 </Badge>
                               )}
                             </td>
-                            <td className="px-4 py-3 text-right space-x-1.5">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleToggleUserActivation(u)}
-                                title={u.actif ? "Désactiver le compte" : "Activer le compte"}
-                              >
-                                {u.actif ? <UserX className="w-3.5 h-3.5 text-rose-600" /> : <UserCheck className="w-3.5 h-3.5 text-emerald-600" />}
-                              </Button>
-                              <Button size="sm" variant="outline" onClick={() => handleOpenEditUser(u)}>
-                                <Pencil className="w-3.5 h-3.5 mr-1" /> Éditer
-                              </Button>
-                              <Button size="sm" variant="destructive" onClick={() => handleDeleteUser(u.id, u.username)}>
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </Button>
+                            <td className="px-4 py-3 text-right">
+                              <div className="flex items-center justify-end gap-1">
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className={`h-8 w-8 ${u.actif ? "text-rose-600 hover:text-rose-700 hover:bg-rose-50" : "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"}`}
+                                  onClick={() => handleToggleUserActivation(u)}
+                                  title={u.actif ? "Désactiver le compte" : "Activer le compte"}
+                                >
+                                  {u.actif ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                                </Button>
+                                <Button size="icon" variant="ghost" className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50" title="Éditer" onClick={() => handleOpenEditUser(u)}>
+                                  <Pencil className="w-4 h-4" />
+                                </Button>
+                                <Button size="icon" variant="ghost" className="h-8 w-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50" title="Supprimer" onClick={() => handleDeleteUser(u.id, u.username)}>
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
                             </td>
                           </tr>
                         );
@@ -593,13 +596,15 @@ export default function RolesPermissionsUsersPage() {
                               )}
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-right space-x-2">
-                            <Button size="sm" variant="outline" onClick={() => handleOpenEditRole(r)}>
-                              <Pencil className="w-3.5 h-3.5 mr-1" /> Éditer
-                            </Button>
-                            <Button size="sm" variant="destructive" onClick={() => handleDeleteRole(r.id, r.nom)}>
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </Button>
+                          <td className="px-4 py-3 text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <Button size="icon" variant="ghost" className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50" title="Éditer" onClick={() => handleOpenEditRole(r)}>
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                              <Button size="icon" variant="ghost" className="h-8 w-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50" title="Supprimer" onClick={() => handleDeleteRole(r.id, r.nom)}>
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       ))}

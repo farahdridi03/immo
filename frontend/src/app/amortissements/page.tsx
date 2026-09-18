@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { amortissementsApi, immobilisationsApi } from "@/services/api/immobilisations";
 import type { PlanAmortissement, EcritureAmortissement, Immobilisation, ModeAmortissement } from "@/types/api";
 import { exportPlanAmortissementToExcel, exportAllPlansToExcel } from "@/lib/exportExcel";
-import { FileSpreadsheet, Download } from "lucide-react";
+import { FileSpreadsheet, Download, Table, Edit, Trash2 } from "lucide-react";
 
 export default function AmortissementsPage() {
   const [plans, setPlans] = useState<PlanAmortissement[]>([]);
@@ -357,21 +357,18 @@ export default function AmortissementsPage() {
                             })}{" "}
                             DT
                           </td>
-                          <td className="px-4 py-3 text-right space-x-2">
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              onClick={() => handleViewSchedule(item)}
-                              title="Voir le tableau d'amortissement"
-                            >
-                              Tableau
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={() => handleOpenEdit(item)}>
-                              Éditer
-                            </Button>
-                            <Button size="sm" variant="destructive" onClick={() => handleDeletePlan(item.id)}>
-                              Supprimer
-                            </Button>
+                          <td className="px-4 py-3 text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <Button size="icon" variant="ghost" className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50" title="Voir le tableau d'amortissement" onClick={() => handleViewSchedule(item)}>
+                                <Table className="w-4 h-4" />
+                              </Button>
+                              <Button size="icon" variant="ghost" className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50" title="Éditer" onClick={() => handleOpenEdit(item)}>
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button size="icon" variant="ghost" className="h-8 w-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50" title="Supprimer" onClick={() => handleDeletePlan(item.id)}>
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       );

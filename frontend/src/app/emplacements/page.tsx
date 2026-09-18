@@ -10,6 +10,7 @@ import { emplacementsApi } from "@/services/api/immobilisations";
 import { usersApi } from "@/services/api/users";
 import type { Emplacement, TypeEmplacement, Utilisateur } from "@/types/api";
 import { AddressMapPicker } from "@/components/ui/AddressMapPicker";
+import { Edit, Trash2 } from "lucide-react";
 
 export default function EmplacementsPage() {
   const [items, setItems] = useState<Emplacement[]>([]);
@@ -168,13 +169,15 @@ export default function EmplacementsPage() {
                         </td>
                         <td className="px-4 py-3">{item.responsable || "-"}</td>
                         <td className="px-4 py-3 text-muted-foreground">{item.adresse || "-"}</td>
-                        <td className="px-4 py-3 text-right space-x-2">
-                          <Button size="sm" variant="outline" onClick={() => handleOpenEdit(item)}>
-                            Éditer
-                          </Button>
-                          <Button size="sm" variant="destructive" onClick={() => handleDelete(item.id)}>
-                            Supprimer
-                          </Button>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50" title="Éditer" onClick={() => handleOpenEdit(item)}>
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50" title="Supprimer" onClick={() => handleDelete(item.id)}>
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))}

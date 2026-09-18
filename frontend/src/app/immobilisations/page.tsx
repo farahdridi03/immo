@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { QrCode } from "lucide-react";
+import { QrCode, Eye, Edit, Trash2 } from "lucide-react";
 import { QrScannerModal } from "@/components/ui/QrScannerModal";
 import {
   emplacementsApi,
@@ -233,16 +233,18 @@ export default function ImmobilisationsPage() {
                         <td className="px-4 py-3 font-mono font-medium">
                           {item.valeur_acquisition ? `${item.valeur_acquisition} DT` : "-"}
                         </td>
-                        <td className="px-4 py-3 text-right space-x-2">
-                          <Button size="sm" variant="outline" onClick={() => router.push(`/immobilisations/${item.id}`)}>
-                            Voir
-                          </Button>
-                          <Button size="sm" variant="ghost" onClick={() => handleOpenEdit(item)}>
-                            Éditer
-                          </Button>
-                          <Button size="sm" variant="destructive" onClick={() => handleDelete(item.id)}>
-                            Supprimer
-                          </Button>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50" title="Voir les détails" onClick={() => router.push(`/immobilisations/${item.id}`)}>
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50" title="Éditer" onClick={() => handleOpenEdit(item)}>
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50" title="Supprimer" onClick={() => handleDelete(item.id)}>
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))}

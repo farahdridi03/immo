@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { departementsApi, rolesApi, usersApi } from "@/services/api/users";
 import type { Departement, Role, Utilisateur } from "@/types/api";
+import { Edit, UserCheck, UserX } from "lucide-react";
 
 export default function UsersPage() {
   const [items, setItems] = useState<Utilisateur[]>([]);
@@ -212,19 +213,23 @@ export default function UsersPage() {
                               : "Inactif"}
                           </Badge>
                         </td>
-                        <td className="px-4 py-3 text-right space-x-2">
-                          <Button size="sm" variant="outline" onClick={() => handleOpenEdit(item)}>
-                            Éditer
-                          </Button>
-                          {!item.est_admin_entreprise && (
-                            <Button
-                              size="sm"
-                              variant={item.actif ? "destructive" : "default"}
-                              onClick={() => handleToggleActivate(item)}
-                            >
-                              {item.actif ? "Désactiver" : "Activer"}
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50" title="Éditer" onClick={() => handleOpenEdit(item)}>
+                              <Edit className="w-4 h-4" />
                             </Button>
-                          )}
+                            {!item.est_admin_entreprise && (
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className={`h-8 w-8 ${item.actif ? "text-rose-600 hover:text-rose-700 hover:bg-rose-50" : "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"}`}
+                                title={item.actif ? "Désactiver le compte" : "Activer le compte"}
+                                onClick={() => handleToggleActivate(item)}
+                              >
+                                {item.actif ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                              </Button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}

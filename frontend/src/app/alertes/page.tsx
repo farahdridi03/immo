@@ -399,10 +399,10 @@ export default function AlertesPage() {
                             handleMarkAsRead(alerte);
                             router.push(targetLink);
                           }}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#E0DACB] bg-white hover:bg-[#1C1917] hover:text-white text-[#1C1917] text-xs font-semibold transition-all shadow-2xs"
+                          title="Voir"
+                          className="p-1.5 rounded-xl border border-[#E0DACB] bg-white hover:bg-[#1C1917] hover:text-white text-[#1C1917] transition-all shadow-2xs"
                         >
-                          <span>Voir</span>
-                          <ExternalLink className="w-3.5 h-3.5" />
+                          <ExternalLink className="w-4 h-4" />
                         </button>
                       )}
 

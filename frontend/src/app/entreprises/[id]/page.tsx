@@ -399,23 +399,27 @@ export default function EntrepriseDetailPage({
                             {dept.actif ? "Actif" : "Inactif"}
                           </Badge>
                         </td>
-                        <td className="px-4 py-3 text-right space-x-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleOpenEditDept(dept)}
-                          >
-                            <Pencil className="w-3.5 h-3.5 mr-1" />
-                            Éditer
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => handleDeleteDept(dept.id, dept.nom)}
-                          >
-                            <Trash2 className="w-3.5 h-3.5 mr-1" />
-                            Supprimer
-                          </Button>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                              onClick={() => handleOpenEditDept(dept)}
+                              title="Éditer"
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-8 w-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+                              onClick={() => handleDeleteDept(dept.id, dept.nom)}
+                              title="Supprimer"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))}

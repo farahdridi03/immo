@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Eye, Edit, Trash2 } from "lucide-react";
 import {
   contratsApi,
   documentsContratApi,
@@ -403,16 +404,18 @@ export default function MaintenancePage() {
                             {c.statut}
                           </Badge>
                         </td>
-                        <td className="py-3 px-4 text-right space-x-2">
-                          <Button variant="outline" size="sm" onClick={() => router.push(`/maintenance/contrats/${c.id}`)}>
-                            Voir
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => handleOpenContratModal(c)}>
-                            Modifier
-                          </Button>
-                          <Button variant="ghost" size="sm" className="text-rose-600 hover:text-rose-700" onClick={() => handleDeleteContrat(c.id)}>
-                            Supprimer
-                          </Button>
+                        <td className="py-3 px-4 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50" title="Voir les détails" onClick={() => router.push(`/maintenance/contrats/${c.id}`)}>
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50" title="Modifier" onClick={() => handleOpenContratModal(c)}>
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50" title="Supprimer" onClick={() => handleDeleteContrat(c.id)}>
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -482,16 +485,18 @@ export default function MaintenancePage() {
                             {i.statut}
                           </Badge>
                         </td>
-                        <td className="py-3 px-4 text-right space-x-2">
-                          <Button variant="outline" size="sm" onClick={() => router.push(`/maintenance/interventions/${i.id}`)}>
-                            Voir
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => handleOpenInterventionModal(i)}>
-                            Modifier
-                          </Button>
-                          <Button variant="ghost" size="sm" className="text-rose-600 hover:text-rose-700" onClick={() => handleDeleteIntervention(i.id)}>
-                            Supprimer
-                          </Button>
+                        <td className="py-3 px-4 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50" title="Voir les détails" onClick={() => router.push(`/maintenance/interventions/${i.id}`)}>
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50" title="Modifier" onClick={() => handleOpenInterventionModal(i)}>
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-8 w-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50" title="Supprimer" onClick={() => handleDeleteIntervention(i.id)}>
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))}
