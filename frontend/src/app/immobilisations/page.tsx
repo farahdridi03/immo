@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { QrCode } from "lucide-react";
+import { QrScannerModal } from "@/components/ui/QrScannerModal";
 import {
   emplacementsApi,
   famillesApi,
@@ -28,6 +30,7 @@ export default function ImmobilisationsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isQrScannerOpen, setIsQrScannerOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
 
   // Form states
@@ -160,9 +163,19 @@ export default function ImmobilisationsPage() {
               Suivi du parc d'équipements, matériels et actifs physiques.
             </p>
           </div>
-          <Button onClick={handleOpenCreate} className="shadow-md">
-            + Nouvelle Immobilisation
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsQrScannerOpen(true)}
+              className="flex items-center gap-2 shadow-2xs bg-white hover:bg-[#FAF8F2]"
+            >
+              <QrCode className="w-4 h-4 text-[#1C1917]" />
+              <span>Scanner QR</span>
+            </Button>
+            <Button onClick={handleOpenCreate} className="shadow-md">
+              + Nouvelle Immobilisation
+            </Button>
+          </div>
         </div>
 
         <div className="flex items-center gap-4">
@@ -373,6 +386,12 @@ export default function ImmobilisationsPage() {
           </div>
         </div>
       )}
+
+      {/* QR Code Scanner Modal */}
+      <QrScannerModal
+        isOpen={isQrScannerOpen}
+        onClose={() => setIsQrScannerOpen(false)}
+      />
     </PageContainer>
   );
 }

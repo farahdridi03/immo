@@ -127,9 +127,41 @@ class AlerteViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         qs = super().get_queryset()
         user = self.request.user
-        if user.is_authenticated:
+        if not user.is_authenticated:
+            return qs.none()
+
+        is_super = getattr(user, "is_superuser", False)
+        is_admin = getattr(user, "est_admin_entreprise", False)
+        role = getattr(user, "role", None)
+
+        user_perms = set()
+        if is_super or is_admin:
+            user_perms = {"*"}
+        elif role and hasattr(role, "permissions"):
+            user_perms.update(role.permissions.values_list("code", flat=True))
+            user_perms.update(role.permissions.values_list("module", flat=True))
+
+        can_see_maintenance = "*" in user_perms or bool(user_perms.intersection({"P5", "maintenance", "view_maintenance", "gerer_maintenance"}))
+        can_see_immo = "*" in user_perms or bool(user_perms.intersection({"P1", "P2", "P3", "familles", "immobilisations", "emplacements", "view_immobilisations", "view_emplacements"}))
+        can_see_amort = "*" in user_perms or bool(user_perms.intersection({"P4", "amortissements", "view_amortissements"}))
+
+        if can_see_maintenance:
             self._sync_contract_alerts(user)
-            return qs.filter(destinataire=user)
+
+        qs = qs.filter(destinataire=user)
+
+        if "*" not in user_perms:
+            disallowed_types = []
+            if not can_see_maintenance:
+                disallowed_types.extend([Alerte.TYPE_EXPIRATION_CONTRAT, Alerte.TYPE_MAINTENANCE])
+            if not can_see_immo:
+                disallowed_types.append(Alerte.TYPE_MOUVEMENT)
+            if not can_see_amort:
+                disallowed_types.append(Alerte.TYPE_AMORTISSEMENT)
+
+            if disallowed_types:
+                qs = qs.exclude(type_alerte__in=disallowed_types)
+
         return qs
 
     def _sync_contract_alerts(self, user):

@@ -38,6 +38,7 @@ import {
   Check,
   FileText,
   Download,
+  QrCode,
 } from "lucide-react";
 
 export default function ImmobilisationDetailPage({
@@ -186,6 +187,18 @@ export default function ImmobilisationDetailPage({
     window.print();
   };
 
+  const handleDownloadQrCode = () => {
+    if (!item?.qr_code_base64) return;
+    const link = document.createElement("a");
+    link.href = item.qr_code_base64.startsWith("data:")
+      ? item.qr_code_base64
+      : `data:image/png;base64,${item.qr_code_base64}`;
+    link.download = `QR_${item.code_inventaire}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const getEtatColor = (val: EtatImmobilisation) => {
     switch (val) {
       case "neuf":
@@ -268,7 +281,19 @@ export default function ImmobilisationDetailPage({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {item.qr_code_base64 && (
+            <Button
+              variant="outline"
+              onClick={handleDownloadQrCode}
+              className="flex items-center gap-2 bg-white shadow-2xs hover:bg-[#FAF8F2]"
+              title="Télécharger l'étiquette QR Code (PNG)"
+            >
+              <QrCode className="w-4 h-4 text-[#1C1917]" />
+              <span>Télécharger QR Code</span>
+            </Button>
+          )}
+
           <Button
             variant="outline"
             onClick={handleDownloadPDF}
@@ -297,10 +322,19 @@ export default function ImmobilisationDetailPage({
             <h1 className="text-2xl font-bold text-black tracking-tight uppercase">FICHE D'IMMOBILISATION</h1>
             <p className="text-xs font-semibold text-gray-700 mt-0.5">GestImmo — Plateforme de Gestion des Actifs & Inventaires</p>
           </div>
-          <div className="text-right text-xs text-gray-700 space-y-0.5">
-            <div><strong>Code Inventaire :</strong> <span className="font-mono text-black font-bold">{item.code_inventaire}</span></div>
-            <div><strong>Statut :</strong> {item.statut_display || item.statut} | <strong>État :</strong> {item.etat_display || item.etat}</div>
-            <div><strong>Date d'Édition :</strong> {new Date().toLocaleDateString("fr-FR")}</div>
+          <div className="flex items-center gap-4">
+            {item.qr_code_base64 && (
+              <img
+                src={item.qr_code_base64.startsWith("data:") ? item.qr_code_base64 : `data:image/png;base64,${item.qr_code_base64}`}
+                alt={`QR Code ${item.code_inventaire}`}
+                className="w-16 h-16 object-contain border border-black p-0.5"
+              />
+            )}
+            <div className="text-right text-xs text-gray-700 space-y-0.5">
+              <div><strong>Code Inventaire :</strong> <span className="font-mono text-black font-bold">{item.code_inventaire}</span></div>
+              <div><strong>Statut :</strong> {item.statut_display || item.statut} | <strong>État :</strong> {item.etat_display || item.etat}</div>
+              <div><strong>Date d'Édition :</strong> {new Date().toLocaleDateString("fr-FR")}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -418,6 +452,46 @@ export default function ImmobilisationDetailPage({
                 <div className="text-[11px] text-muted-foreground text-center">
                   Le transfert crée un historique complet consultable sous l'onglet dédié.
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* QR Code Tag Card */}
+            <Card className="border shadow-2xs">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-bold flex items-center gap-2">
+                  <QrCode className="w-4 h-4 text-primary" />
+                  <span>Étiquette QR Code</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4 text-xs text-center">
+                {item.qr_code_base64 ? (
+                  <div className="p-4 bg-white border rounded-2xl flex flex-col items-center space-y-3">
+                    <img
+                      src={item.qr_code_base64.startsWith("data:") ? item.qr_code_base64 : `data:image/png;base64,${item.qr_code_base64}`}
+                      alt={`QR Code ${item.code_inventaire}`}
+                      className="w-40 h-40 object-contain rounded-lg border p-2 bg-white shadow-xs"
+                    />
+                    <div className="font-mono font-bold text-sm text-[#1C1917] tracking-wider">
+                      {item.code_inventaire}
+                    </div>
+                    <Button
+                      onClick={handleDownloadQrCode}
+                      size="sm"
+                      variant="outline"
+                      className="w-full text-xs h-8 flex items-center justify-center gap-1.5"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Télécharger l'étiquette</span>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="p-4 bg-muted/20 border border-dashed rounded-xl text-muted-foreground">
+                    Génération du QR Code en cours...
+                  </div>
+                )}
+                <p className="text-[11px] text-muted-foreground">
+                  Scanner avec l'application mobile ou la caméra de l'appareil pour ouvrir instantanément cette fiche.
+                </p>
               </CardContent>
             </Card>
           </div>

@@ -146,6 +146,20 @@ class ImmobilisationViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(immobilisation)
         return Response(serializer.data)
 
+    @action(detail=False, methods=["get"], url_path=r"lookup/(?P<code>[^/.]+)")
+    def lookup_by_code(self, request, code=None):
+        """
+        Lookup an immobilisation by code_inventaire scanned from QR code.
+        """
+        if not code:
+            return Response({"detail": "Code non fourni."}, status=status.HTTP_400_BAD_REQUEST)
+        qs = self.get_queryset()
+        immo = qs.filter(code_inventaire__iexact=code.strip()).first()
+        if not immo:
+            return Response({"detail": f"Immobilisation '{code}' non trouvée."}, status=status.HTTP_404_NOT_FOUND)
+        serializer = self.get_serializer(immo)
+        return Response(serializer.data)
+
 
 class MouvementEmplacementViewSet(viewsets.ModelViewSet):
     queryset = MouvementEmplacement.objects.select_related(

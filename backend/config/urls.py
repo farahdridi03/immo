@@ -20,6 +20,7 @@ urlpatterns = [
     path('api/v1/', include('apps.maintenance.urls')),
 
     # Unversioned API route fallbacks
+    path('api/', include('apps.core.urls')),
     path('api/', include('apps.users.urls')),
     path('api/', include('apps.immobilisations.urls')),
     path('api/', include('apps.maintenance.urls')),

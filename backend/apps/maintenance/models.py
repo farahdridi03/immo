@@ -2,6 +2,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from simple_history.models import HistoricalRecords  # type: ignore
 
 
 class ContratMaintenance(models.Model):
@@ -65,6 +66,8 @@ class ContratMaintenance(models.Model):
         db_table = "contrats_maintenance"
         unique_together = ("entreprise", "reference")
         ordering = ["-date_debut"]
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return f"Contrat {self.reference} ({self.fournisseur})"
@@ -155,6 +158,8 @@ class Intervention(models.Model):
     class Meta:
         db_table = "interventions_maintenance"
         ordering = ["-date_intervention"]
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return f"Intervention {self.id} - {self.immobilisation.code_inventaire} ({self.statut})"

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
+from simple_history.models import HistoricalRecords  # type: ignore
 
 
 class Entreprise(models.Model):
@@ -141,6 +142,8 @@ class Role(models.Model):
         unique_together = ("entreprise", "nom")
         ordering = ["nom"]
 
+    history = HistoricalRecords()
+
     def __str__(self):
         return f"{self.nom} - {self.entreprise.nom}"
 
@@ -278,6 +281,8 @@ class User(AbstractUser):
                 "Peut gérer les utilisateurs",
             ),
         ]
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.username

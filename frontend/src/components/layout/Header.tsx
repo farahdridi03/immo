@@ -2,18 +2,20 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Bell, ChevronDown, Building2, User as UserIcon, Settings, LogOut, Check, Plus, Loader2 } from "lucide-react";
+import { Search, Bell, ChevronDown, Building2, User as UserIcon, Settings, LogOut, Check, Plus, Loader2, QrCode } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { entreprisesApi } from "@/services/api/users";
 import { alertesApi } from "@/services/api/maintenance";
 import { useRealtimeAlerts } from "@/hooks/useRealtimeAlerts";
+import { QrScannerModal } from "@/components/ui/QrScannerModal";
 import type { Alerte, Entreprise } from "@/types/api";
 
 export function Header() {
-  const { user, logout } = useAuth();
+  const { user, logout, hasAnyPermission } = useAuth();
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCompanyMenuOpen, setIsCompanyMenuOpen] = useState(false);
+  const [isQrScannerOpen, setIsQrScannerOpen] = useState(false);
   const [entreprises, setEntreprises] = useState<Entreprise[]>([]);
   const [selectedEntreprise, setSelectedEntreprise] = useState<Entreprise | null>(null);
   const [loadingEntreprises, setLoadingEntreprises] = useState(false);
@@ -36,15 +38,29 @@ export function Header() {
 
   // Real-time WebSocket Notifications
   useRealtimeAlerts({
-    onAlertReceived: React.useCallback((newAlert: Alerte) => {
-      setUnreadCount((prev) => prev + 1);
-      setToastAlert(newAlert);
+    onAlertReceived: React.useCallback(
+      (newAlert: Alerte) => {
+        const link = newAlert.lien_cible || "";
+        const type = newAlert.type_alerte;
 
-      // Auto-dismiss toast after 7 seconds
-      setTimeout(() => {
-        setToastAlert((current) => (current?.id === newAlert.id ? null : current));
-      }, 7000);
-    }, []),
+        if (type === "expiration_contrat" || type === "maintenance" || link.includes("/maintenance")) {
+          if (!hasAnyPermission(["P5", "maintenance", "view_maintenance", "gerer_maintenance"])) return;
+        } else if (type === "mouvement" || link.includes("/immobilisations") || link.includes("/emplacements")) {
+          if (!hasAnyPermission(["P1", "P2", "P3", "familles", "immobilisations", "emplacements"])) return;
+        } else if (type === "amortissement" || link.includes("/amortissements")) {
+          if (!hasAnyPermission(["P4", "amortissements", "view_amortissements"])) return;
+        }
+
+        setUnreadCount((prev) => prev + 1);
+        setToastAlert(newAlert);
+
+        // Auto-dismiss toast after 7 seconds
+        setTimeout(() => {
+          setToastAlert((current) => (current?.id === newAlert.id ? null : current));
+        }, 7000);
+      },
+      [hasAnyPermission]
+    ),
   });
 
   // Fetch unread alert count
@@ -217,6 +233,16 @@ export function Header() {
           />
         </div>
 
+        {/* QR Scanner Trigger */}
+        <button
+          onClick={() => setIsQrScannerOpen(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1C1917] text-white hover:bg-[#332E2B] transition-colors text-xs font-semibold shadow-2xs cursor-pointer"
+          title="Scanner un QR Code d'immobilisation"
+        >
+          <QrCode className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Scanner QR</span>
+        </button>
+
         {/* Bell Notifications */}
         <button
           onClick={() => router.push("/alertes")}
@@ -335,6 +361,11 @@ export function Header() {
           </div>
         </div>
       )}
+      {/* QR Code Scanner Modal */}
+      <QrScannerModal
+        isOpen={isQrScannerOpen}
+        onClose={() => setIsQrScannerOpen(false)}
+      />
     </header>
   );
 }

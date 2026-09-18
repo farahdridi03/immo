@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from simple_history.models import HistoricalRecords  # type: ignore
 
 
 class Famille(models.Model):
@@ -17,6 +18,8 @@ class Famille(models.Model):
         db_table = "familles"
         unique_together = ("entreprise", "code")
         ordering = ["nom"]
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.nom} ({self.code})"
@@ -55,6 +58,8 @@ class Emplacement(models.Model):
         db_table = "emplacements"
         unique_together = ("entreprise", "code_emplacement")
         ordering = ["nom_emplacement"]
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.nom_emplacement} ({self.code_emplacement})"
@@ -141,6 +146,8 @@ class Immobilisation(models.Model):
         db_table = "immobilisations"
         unique_together = ("entreprise", "code_inventaire")
         ordering = ["-created_at"]
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.designation} ({self.code_inventaire})"
@@ -237,6 +244,8 @@ class PlanAmortissement(models.Model):
     class Meta:
         db_table = "plans_amortissement"
         ordering = ["-created_at"]
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return f"Plan Amortissement - {self.immobilisation.code_inventaire}"

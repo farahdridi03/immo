@@ -248,6 +248,7 @@ export interface Immobilisation {
   emplacement_actuel_nom?: string | null;
   date_mise_en_service?: string | null;
   image?: string | null;
+  qr_code_base64?: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -1,3 +1,6 @@
+import base64
+import io
+import qrcode
 from rest_framework import serializers
 from .models import Emplacement, Famille, Immobilisation, MouvementEmplacement
 from apps.users.models import Entreprise
@@ -103,6 +106,20 @@ class ImmobilisationSerializer(serializers.ModelSerializer):
     )
     etat_display = serializers.CharField(source="get_etat_display", read_only=True)
     statut_display = serializers.CharField(source="get_statut_display", read_only=True)
+    qr_code_base64 = serializers.SerializerMethodField()
+
+    def get_qr_code_base64(self, obj):
+        try:
+            qr_data = f"http://localhost:3000/immobilisations/{obj.id}?code={obj.code_inventaire}"
+            qr = qrcode.QRCode(version=1, box_size=8, border=2)
+            qr.add_data(qr_data)
+            qr.make(fit=True)
+            img = qr.make_image(fill_color="black", back_color="white")
+            buffer = io.BytesIO()
+            img.save(buffer)
+            return "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode("utf-8")
+        except Exception:
+            return ""
 
     class Meta:
         model = Immobilisation
@@ -127,6 +144,7 @@ class ImmobilisationSerializer(serializers.ModelSerializer):
             "emplacement_actuel_nom",
             "date_mise_en_service",
             "image",
+            "qr_code_base64",
             "created_at",
             "updated_at",
         ]

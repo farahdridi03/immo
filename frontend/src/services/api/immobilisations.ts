@@ -46,6 +46,7 @@ export const immobilisationsApi = {
       commentaire?: string;
     }
   ) => apiClient.post<Immobilisation>(`/immobilisations/${id}/transferer/`, payload),
+  lookupByCode: (code: string) => apiClient.get<Immobilisation>(`/immobilisations/lookup/${encodeURIComponent(code)}/`),
 };
 
 export const mouvementsEmplacementApi = {

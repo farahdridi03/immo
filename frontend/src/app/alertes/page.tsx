@@ -54,7 +54,7 @@ function getAlertIcon(typeAlerte: string) {
 
 export default function AlertesPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, hasAnyPermission } = useAuth();
 
   const [alertes, setAlertes] = useState<Alerte[]>([]);
   const [loading, setLoading] = useState(true);
@@ -74,9 +74,23 @@ export default function AlertesPage() {
 
   // Real-time WebSocket listener
   useRealtimeAlerts({
-    onAlertReceived: React.useCallback((newAlert: Alerte) => {
-      setAlertes((prev) => [newAlert, ...prev.filter((a) => a.id !== newAlert.id)]);
-    }, []),
+    onAlertReceived: React.useCallback(
+      (newAlert: Alerte) => {
+        const link = newAlert.lien_cible || "";
+        const type = newAlert.type_alerte;
+
+        if (type === "expiration_contrat" || type === "maintenance" || link.includes("/maintenance")) {
+          if (!hasAnyPermission(["P5", "maintenance", "view_maintenance", "gerer_maintenance"])) return;
+        } else if (type === "mouvement" || link.includes("/immobilisations") || link.includes("/emplacements")) {
+          if (!hasAnyPermission(["P1", "P2", "P3", "familles", "immobilisations", "emplacements"])) return;
+        } else if (type === "amortissement" || link.includes("/amortissements")) {
+          if (!hasAnyPermission(["P4", "amortissements", "view_amortissements"])) return;
+        }
+
+        setAlertes((prev) => [newAlert, ...prev.filter((a) => a.id !== newAlert.id)]);
+      },
+      [hasAnyPermission]
+    ),
   });
 
   const fetchAlertes = async () => {

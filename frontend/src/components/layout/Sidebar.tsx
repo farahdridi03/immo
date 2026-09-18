@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Settings,
   Bell,
+  History,
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { cn } from "@/lib/utils";
@@ -21,7 +22,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, hasAnyPermission } = useAuth();
   const [unreadCount, setUnreadCount] = useState<number>(0);
 
   useEffect(() => {
@@ -36,15 +37,20 @@ export function Sidebar() {
   }, [user]);
 
   const navItems = [
-    { label: "Tableau de bord", href: "/", icon: LayoutDashboard },
-    { label: "Familles", href: "/familles", icon: FolderTree },
-    { label: "Immobilisations", href: "/immobilisations", icon: Boxes },
-    { label: "Emplacements", href: "/emplacements", icon: MapPin },
-    { label: "Amortissement", href: "/amortissements", icon: TrendingDown },
-    { label: "Contrats de maintenance", href: "/maintenance", icon: Wrench },
-    { label: "Utilisateurs & Rôles", href: "/roles", icon: ShieldCheck },
-    { label: "Paramètres entreprise", href: "/entreprises", icon: Settings },
+    { label: "Tableau de bord", href: "/", icon: LayoutDashboard, permissions: [] },
+    { label: "Familles", href: "/familles", icon: FolderTree, permissions: ["P1", "familles", "view_familles", "gerer_familles"] },
+    { label: "Immobilisations", href: "/immobilisations", icon: Boxes, permissions: ["P2", "immobilisations", "view_immobilisations", "gerer_immobilisations"] },
+    { label: "Emplacements", href: "/emplacements", icon: MapPin, permissions: ["P3", "emplacements", "view_emplacements", "gerer_emplacements"] },
+    { label: "Amortissement", href: "/amortissements", icon: TrendingDown, permissions: ["P4", "amortissements", "view_amortissements", "gerer_amortissements"] },
+    { label: "Contrats de maintenance", href: "/maintenance", icon: Wrench, permissions: ["P5", "maintenance", "view_maintenance", "gerer_maintenance"] },
+    { label: "Utilisateurs & Rôles", href: "/roles", icon: ShieldCheck, permissions: ["P6", "users", "roles", "view_users", "manage_users", "manage_roles"] },
+    { label: "Historique d'Audit", href: "/audit", icon: History, permissions: ["P7", "audit", "view_audit"] },
+    { label: "Paramètres entreprise", href: "/entreprises", icon: Settings, permissions: ["P8", "entreprises", "manage_entreprises"] },
   ];
+
+  const visibleNavItems = navItems.filter((item) =>
+    item.permissions.length === 0 ? true : hasAnyPermission(item.permissions)
+  );
 
   return (
     <aside className="w-64 shrink-0 border-r border-[#EFECE6] bg-[#F7F4EC] h-screen sticky top-0 flex flex-col justify-between p-4 selection:bg-amber-100 overflow-y-auto z-40">
@@ -56,7 +62,7 @@ export function Sidebar() {
 
         {/* Navigation Items */}
         <nav className="space-y-1.5">
-          {navItems.map((item) => {
+          {visibleNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
             return (

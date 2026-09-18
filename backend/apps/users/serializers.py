@@ -260,12 +260,14 @@ class UserSerializer(serializers.ModelSerializer):
         return UserPreferenceSerializer(prefs).data
 
     def get_permissions(self, obj):
-        if obj.is_superuser:
-            return list(Permission.objects.values_list("code", flat=True))
-        if obj.est_admin_entreprise:
-            return list(Permission.objects.values_list("code", flat=True))
+        if obj.is_superuser or obj.est_admin_entreprise:
+            all_codes = list(Permission.objects.values_list("code", flat=True))
+            all_modules = list(Permission.objects.values_list("module", flat=True))
+            return list(set(all_codes + all_modules))
         if obj.role:
-            return list(obj.role.permissions.values_list("code", flat=True))
+            codes = list(obj.role.permissions.values_list("code", flat=True))
+            modules = list(obj.role.permissions.values_list("module", flat=True))
+            return list(set(codes + modules))
         return []
 
     def create(self, validated_data):

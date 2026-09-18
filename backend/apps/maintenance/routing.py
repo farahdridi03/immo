@@ -1,6 +1,8 @@
+from typing import Any, cast
 from django.urls import re_path
 from .consumers import AlertConsumer
 
 websocket_urlpatterns = [
-    re_path(r"^ws/alerts/$", AlertConsumer.as_asgi()),
+    re_path(r"^ws/alerts/$", cast(Any, AlertConsumer.as_asgi())),
 ]
+
