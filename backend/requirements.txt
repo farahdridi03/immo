@@ -1,6 +1,8 @@
 # Core Django & REST Framework
 Django>=5.1,<6.0
 djangorestframework>=3.15,<4.0
+djangorestframework-simplejwt>=5.3,<6.0
+django-filter>=26.0,<27.0
 
 # PostgreSQL Database Adapter (Modern psycopg v3)
 psycopg[binary]>=3.2,<4.0
@@ -8,15 +10,40 @@ psycopg[binary]>=3.2,<4.0
 # Security & CORS
 django-cors-headers>=4.4,<5.0
 
+# Authentication & JWT
+PyJWT>=2.8,<3.0
+PyOTP>=2.9.0
+cryptography>=40.0,<51.0
+
+# QR Code generation
+qrcode>=8.0
+
 # Image handling for models (Entreprise logo)
-Pillow>=10.0.0,<11.0.0
+Pillow>=10.0.0,<13.0.0
 
 # Environment Configuration
 python-dotenv>=1.0,<2.0
-
-# 2FA (Two-Factor Authentication)
-pyotp>=2.9.0
-qrcode>=8.0
+python-decouple>=3.6,<4.0
 
 # ASGI Server
 daphne>=4.2,<5.0
+
+# WebSockets / Channels
+channels>=4.0,<5.0
+asgiref>=3.5,<4.0
+
+# History / Audit logging
+django-simple-history>=3.0,<4.0
+
+# Twisted (required by Daphne/Channels)
+Twisted>=22.4
+autobahn>=22.4.2
+txaio>=25.12
+pyOpenSSL>=25.0
+service-identity>=18.1
+
+# Utilities
+sqlparse>=0.4
+colorama>=0.4
+tzdata>=2024
+typing_extensions>=4.2
