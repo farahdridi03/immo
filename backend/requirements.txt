@@ -18,3 +18,5 @@ python-dotenv>=1.0,<2.0
 pyotp>=2.9.0
 qrcode>=8.0
 
+# ASGI Server
+daphne>=4.2,<5.0
