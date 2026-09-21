@@ -281,13 +281,14 @@ class UserSerializer(serializers.ModelSerializer):
             app_url = os.getenv("FRONTEND_URL", "http://localhost:3000/login")
             entreprise_name = user.entreprise.nom if user.entreprise else "GestImmo"
             subject = f"Vos identifiants d'accès - {entreprise_name}"
+            password_display = raw_password or "(défini par l'administrateur)"
             message = (
                 f"Bonjour {user.first_name or user.username},\n\n"
                 f"Un compte utilisateur vous a été créé sur la plateforme GestImmo pour l'entreprise '{entreprise_name}'.\n\n"
                 f"Voici vos identifiants de connexion :\n"
                 f"• Lien de l'application : {app_url}\n"
                 f"• Nom d'utilisateur : {user.username}\n"
-                f"• Mot de passe : {raw_password or '(défini par l\'administrateur)'}\n\n"
+                f"• Mot de passe : {password_display}\n\n"
                 f"Cordialement,\n"
                 f"L'équipe GestImmo"
             )
