@@ -10,6 +10,8 @@ from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
 
+from apps.core.urls import urlpatterns as core_urlpatterns
+
 urlpatterns = [
     path('', RedirectView.as_view(url='/admin/', permanent=False), name='index-redirect'),
     path('admin/', admin.site.urls),
@@ -20,7 +22,7 @@ urlpatterns = [
     path('api/v1/', include('apps.maintenance.urls')),
 
     # Unversioned API route fallbacks
-    path('api/', include('apps.core.urls')),
+    path('api/', include(core_urlpatterns)),
     path('api/', include('apps.users.urls')),
     path('api/', include('apps.immobilisations.urls')),
     path('api/', include('apps.maintenance.urls')),

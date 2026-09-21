@@ -1,15 +1,13 @@
-from django.contrib.auth import get_user_model
-from django.test import TestCase
-from rest_framework.test import APIClient
+from typing import Any
+from rest_framework.test import APITestCase
 
-from apps.users.models import Entreprise
+from apps.users.models import Entreprise, User
 from apps.immobilisations.models import Immobilisation, Famille
 from .models import ContratMaintenance, ImmobilisationContrat, Intervention, Alerte
 
-User = get_user_model()
 
-
-class MaintenanceTestCase(TestCase):
+class MaintenanceTestCase(APITestCase):
+    client: Any
     def setUp(self):
         self.entreprise = Entreprise.objects.create(
             nom="Maintenance Test Corp",
@@ -19,6 +17,7 @@ class MaintenanceTestCase(TestCase):
             username="techuser",
             password="Password123!",
             entreprise=self.entreprise,
+            est_admin_entreprise=True,
         )
         self.famille = Famille.objects.create(
             nom="Climatisation",
@@ -32,7 +31,6 @@ class MaintenanceTestCase(TestCase):
             famille=self.famille,
             valeur_acquisition=3500.00,
         )
-        self.client = APIClient()
         self.client.force_authenticate(user=self.user)
 
     def test_create_contrat_and_assign_asset(self):
@@ -49,7 +47,6 @@ class MaintenanceTestCase(TestCase):
             },
             format="json",
         )
-        if response.status_code != 201: print('ERR DATA:', response.data)
         self.assertEqual(response.status_code, 201)
         contrat_id = response.data["id"]
 

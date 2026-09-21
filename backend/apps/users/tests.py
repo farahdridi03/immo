@@ -119,7 +119,10 @@ class UserModelHierarchyTest(TestCase):
         self.assertEqual(data["role_nom"], "Gestionnaire Inventaire")
         self.assertEqual(data["departement_nom"], "Direction Informatique")
         self.assertEqual(data["statut_compte"], User.STATUT_ACTIF)
-        self.assertEqual(set(data["permissions"]), {"immobilisation.create", "contrat.delete"})
+        self.assertEqual(
+            set(data["permissions"]),
+            {"immobilisation.create", "contrat.delete", "inventaire", "maintenance"}
+        )
 
     def test_role_serializer(self):
         serializer = RoleSerializer(self.role)
