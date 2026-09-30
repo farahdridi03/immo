@@ -195,7 +195,7 @@ function DashboardContent() {
 
         <Link
           href="/immobilisations"
-          className="inline-flex items-center justify-center gap-2 bg-[#2A2725] hover:bg-[#1C1917] text-white text-xs sm:text-sm font-medium px-4 py-2.5 rounded-xl shadow-xs transition-all w-fit"
+          className="inline-flex items-center justify-center gap-2 bg-[#483C2C] hover:bg-[#483C2C] text-white text-xs sm:text-sm font-medium px-4 py-2.5 rounded-xl shadow-xs transition-all w-fit"
         >
           <span>Voir les immobilisations</span>
           <ArrowRight className="w-4 h-4" />
@@ -314,7 +314,7 @@ function DashboardContent() {
                   {/* Dynamic Progress Bar */}
                   <div className="w-full bg-[#F0EDE4] h-2.5 rounded-full overflow-hidden">
                     <div
-                      className="bg-[#2A2725] h-full rounded-full transition-all duration-300"
+                      className="bg-[#483C2C] h-full rounded-full transition-all duration-300"
                       style={{ width: `${item.percentage}%` }}
                     />
                   </div>

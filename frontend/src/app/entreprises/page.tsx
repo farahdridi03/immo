@@ -54,7 +54,7 @@ export default function EntreprisesPage() {
               Administration des entités morales et sociétés du système.
             </p>
           </div>
-          <Button onClick={() => router.push("/entreprises/creer")} className="shadow-md bg-[#1C1917] text-white">
+          <Button onClick={() => router.push("/entreprises/creer")} className="shadow-md bg-[#483C2C] text-white">
             + Nouvelle Entreprise
           </Button>
         </div>

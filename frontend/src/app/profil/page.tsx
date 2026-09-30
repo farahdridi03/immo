@@ -247,7 +247,7 @@ export default function ProfilPage() {
         {/* Page Header */}
         <div className="bg-white rounded-2xl border border-[#E0DACB] p-6 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="relative w-16 h-16 rounded-2xl bg-[#1C1917] text-white font-bold text-xl flex items-center justify-center shrink-0 shadow-2xs border border-[#E0DACB] overflow-hidden">
+            <div className="relative w-16 h-16 rounded-2xl bg-[#483C2C] text-white font-bold text-xl flex items-center justify-center shrink-0 shadow-2xs border border-[#E0DACB] overflow-hidden">
               {avatar ? (
                 <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
@@ -327,7 +327,7 @@ export default function ProfilPage() {
                     Format recommandé: PNG ou JPG (carré, max 2 Mo).
                   </p>
                   <div className="flex flex-wrap items-center gap-2 justify-center sm:justify-start">
-                    <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#1C1917] text-white hover:bg-[#2C2927] transition-colors shadow-2xs">
+                    <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#483C2C] text-white hover:bg-[#382E22] transition-colors shadow-2xs">
                       <Upload className="w-3.5 h-3.5" />
                       <span>{avatar ? "Changer la photo" : "Télécharger une photo"}</span>
                       <input
@@ -456,7 +456,7 @@ export default function ProfilPage() {
                 <Button
                   type="submit"
                   disabled={savingProfile}
-                  className="bg-[#1C1917] text-white hover:bg-[#2C2927]"
+                  className="bg-[#483C2C] text-white hover:bg-[#382E22]"
                 >
                   <Save className="w-4 h-4 mr-2" />
                   {savingProfile ? "Enregistrement..." : "Enregistrer les modifications"}
@@ -591,7 +591,7 @@ export default function ProfilPage() {
               {!user.two_factor_enabled ? (
                 <Button
                   onClick={handleStart2FASetup}
-                  className="bg-[#1C1917] text-white hover:bg-[#2C2927] text-xs shrink-0"
+                  className="bg-[#483C2C] text-white hover:bg-[#382E22] text-xs shrink-0"
                 >
                   <QrCode className="w-4 h-4 mr-2" />
                   Activer le 2FA
@@ -722,7 +722,7 @@ export default function ProfilPage() {
                   <Button
                     type="submit"
                     disabled={confirming2FA || setupCode.length < 6}
-                    className="bg-[#1C1917] text-white hover:bg-[#2C2927]"
+                    className="bg-[#483C2C] text-white hover:bg-[#382E22]"
                   >
                     {confirming2FA ? "Vérification..." : "Vérifier & Activer"}
                   </Button>
@@ -755,7 +755,7 @@ export default function ProfilPage() {
                   <Button
                     type="button"
                     onClick={handleDownloadBackupCodes}
-                    className="flex-1 bg-[#1C1917] text-white hover:bg-[#2C2927] text-xs"
+                    className="flex-1 bg-[#483C2C] text-white hover:bg-[#382E22] text-xs"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Télécharger (.txt)
@@ -775,7 +775,7 @@ export default function ProfilPage() {
                   <Button
                     type="button"
                     onClick={() => setIsSetupModalOpen(false)}
-                    className="bg-[#1C1917] text-white"
+                    className="bg-[#483C2C] text-white"
                   >
                     J'ai sauvegardé mes codes
                   </Button>

@@ -18,7 +18,6 @@ import {
   Users,
   ShieldCheck,
   Key,
-  Plus,
   Search,
   Pencil,
   Trash2,
@@ -31,6 +30,8 @@ import {
   Phone,
   UserCheck,
   UserX,
+  Check,
+  X,
 } from "lucide-react";
 
 export default function RolesPermissionsUsersPage() {
@@ -66,12 +67,12 @@ export default function RolesPermissionsUsersPage() {
   const [roleDescription, setRoleDescription] = useState("");
   const [selectedPermissions, setSelectedPermissions] = useState<number[]>([]);
 
-  // Permission Modal State
-  const [isPermModalOpen, setIsPermModalOpen] = useState(false);
-  const [editingPermId, setEditingPermId] = useState<number | null>(null);
-  const [permNom, setPermNom] = useState("");
-  const [permCode, setPermCode] = useState("");
-  const [permModule, setPermModule] = useState("");
+  // Permission assign modal state
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [assigningPermission, setAssigningPermission] = useState<Permission | null>(null);
+  const [assignRoleId, setAssignRoleId] = useState<number | "">("");
+  const [assignSaving, setAssignSaving] = useState(false);
+  const [assignSuccess, setAssignSuccess] = useState(false);
 
   // Load All Data
   const loadData = async () => {
@@ -243,52 +244,35 @@ export default function RolesPermissionsUsersPage() {
     }
   };
 
-  // --- PERMISSION HANDLERS ---
-  const handleOpenCreatePermission = () => {
-    setEditingPermId(null);
-    setPermNom("");
-    setPermCode("");
-    setPermModule("immobilisations");
-    setIsPermModalOpen(true);
+  // --- PERMISSION ASSIGN HANDLER ---
+  const handleOpenAssign = (p: Permission) => {
+    setAssigningPermission(p);
+    setAssignRoleId("");
+    setAssignSuccess(false);
+    setIsAssignModalOpen(true);
   };
 
-  const handleOpenEditPermission = (p: Permission) => {
-    setEditingPermId(p.id);
-    setPermNom(p.nom);
-    setPermCode(p.code);
-    setPermModule(p.module || "Général");
-    setIsPermModalOpen(true);
-  };
-
-  const handleSavePermission = async (e: React.FormEvent) => {
+  const handleAssignPermission = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!assignRoleId || !assigningPermission) return;
+    setAssignSaving(true);
     try {
-      const payload = {
-        nom: permNom,
-        code: permCode,
-        module: permModule,
-      };
-      if (editingPermId) {
-        await permissionsApi.update(editingPermId, payload);
-      } else {
-        await permissionsApi.create(payload);
-      }
-      setIsPermModalOpen(false);
+      const role = rolesList.find((r) => r.id === Number(assignRoleId));
+      if (!role) return;
+      const existingPermIds = role.permissions_details
+        ? role.permissions_details.map((p) => p.id)
+        : role.permissions || [];
+      const newPermIds = existingPermIds.includes(assigningPermission.id)
+        ? existingPermIds
+        : [...existingPermIds, assigningPermission.id];
+      await rolesApi.update(Number(assignRoleId), { permissions: newPermIds });
+      setAssignSuccess(true);
       loadData();
     } catch (err) {
-      console.error("Error saving permission:", err);
-      alert("Erreur lors de l'enregistrement de la permission.");
-    }
-  };
-
-  const handleDeletePermission = async (id: number, nom: string) => {
-    if (confirm(`Voulez-vous vraiment supprimer la permission "${nom}" ?`)) {
-      try {
-        await permissionsApi.delete(id);
-        loadData();
-      } catch (err) {
-        console.error("Error deleting permission:", err);
-      }
+      console.error("Error assigning permission:", err);
+      alert("Erreur lors de l'assignation de la permission.");
+    } finally {
+      setAssignSaving(false);
     }
   };
 
@@ -307,7 +291,7 @@ export default function RolesPermissionsUsersPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-[#1C1917]">
-              Gestion des Accès & Sécurité
+              Gestion des Accès &amp; Sécurité
             </h1>
             <p className="text-sm text-[#78716C]">
               Administration centralisée des utilisateurs, rôles et privilèges du système.
@@ -316,21 +300,15 @@ export default function RolesPermissionsUsersPage() {
 
           <div className="flex items-center gap-2">
             {activeTab === "users" && (
-              <Button onClick={handleOpenCreateUser} className="bg-[#1C1917] text-white hover:bg-[#332F2C]">
+              <Button onClick={handleOpenCreateUser} className="bg-[#483C2C] text-white hover:bg-[#382E22]">
                 <UserPlus className="w-4 h-4 mr-2" />
                 + Nouvel Utilisateur
               </Button>
             )}
             {activeTab === "roles" && (
-              <Button onClick={handleOpenCreateRole} className="bg-[#1C1917] text-white hover:bg-[#332F2C]">
+              <Button onClick={handleOpenCreateRole} className="bg-[#483C2C] text-white hover:bg-[#382E22]">
                 <ShieldCheck className="w-4 h-4 mr-2" />
                 + Nouveau Rôle
-              </Button>
-            )}
-            {activeTab === "permissions" && (
-              <Button onClick={handleOpenCreatePermission} className="bg-[#1C1917] text-white hover:bg-[#332F2C]">
-                <Key className="w-4 h-4 mr-2" />
-                + Nouvelle Permission
               </Button>
             )}
           </div>
@@ -362,7 +340,7 @@ export default function RolesPermissionsUsersPage() {
             }`}
           >
             <ShieldCheck className="w-4 h-4" />
-            <span>Rôles & Accès</span>
+            <span>Rôles &amp; Accès</span>
             <span className="ml-1 text-[10px] px-2 py-0.5 rounded-full bg-[#FAF8F2] border border-[#E0DACB]">
               {rolesList.length}
             </span>
@@ -438,7 +416,7 @@ export default function RolesPermissionsUsersPage() {
                           <tr key={u.id} className="hover:bg-[#FAF8F2]/60 transition-colors">
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-3">
-                                <div className="h-9 w-9 rounded-full bg-[#1C1917] text-white font-bold text-xs flex items-center justify-center shrink-0">
+                                <div className="h-9 w-9 rounded-full bg-[#483C2C] text-white font-bold text-xs flex items-center justify-center shrink-0">
                                   {initials}
                                 </div>
                                 <div>
@@ -616,11 +594,20 @@ export default function RolesPermissionsUsersPage() {
           </Card>
         )}
 
-        {/* TAB 3: PERMISSIONS TAB */}
+        {/* TAB 3: PERMISSIONS CATALOGUE (read-only + assign to role) */}
         {activeTab === "permissions" && (
-          <div className="space-y-6">
+          <div className="space-y-4">
+            {/* Info banner */}
+            <div className="flex items-start gap-3 bg-[#FAF8F2] border border-[#E0DACB] rounded-xl px-4 py-3">
+              <Key className="w-4 h-4 text-[#78716C] mt-0.5 shrink-0" />
+              <p className="text-xs text-[#57534E] leading-relaxed">
+                Ce catalogue affiche toutes les permissions disponibles dans le système, organisées par module.
+                Cliquez sur <strong>Assigner à un rôle</strong> pour attribuer une permission à un rôle existant.
+              </p>
+            </div>
+
             <Card className="bg-white border-[#E0DACB]">
-              <CardHeader className="flex flex-row items-center justify-between pb-3">
+              <CardHeader className="pb-3">
                 <CardTitle className="text-base font-bold text-[#1C1917] flex items-center gap-2">
                   <Key className="w-5 h-5 text-[#78716C]" />
                   <span>Catalogue des Permissions Système ({permissionsList.length})</span>
@@ -632,44 +619,67 @@ export default function RolesPermissionsUsersPage() {
                 ) : Object.keys(groupedPermissions).length === 0 ? (
                   <div className="py-8 text-center text-xs text-[#78716C]">Aucune permission trouvée.</div>
                 ) : (
-                  <div className="space-y-6">
+                  <div className="space-y-5">
                     {Object.entries(groupedPermissions).map(([moduleName, perms]) => (
-                      <div key={moduleName} className="border border-[#E0DACB] rounded-xl overflow-hidden bg-[#FAF8F2]/40">
+                      <div key={moduleName} className="border border-[#E0DACB] rounded-xl overflow-hidden">
+                        {/* Module header */}
                         <div className="bg-[#FAF8F2] px-4 py-2.5 border-b border-[#E0DACB] flex items-center justify-between">
-                          <span className="font-bold text-xs text-[#1C1917] uppercase tracking-wider">
-                            Module : {moduleName}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <div className="h-2 w-2 rounded-full bg-[#483C2C]" />
+                            <span className="font-bold text-xs text-[#1C1917] uppercase tracking-wider">
+                              {moduleName}
+                            </span>
+                          </div>
                           <span className="text-[11px] font-semibold bg-white px-2 py-0.5 rounded-full border border-[#E0DACB] text-[#57534E]">
-                            {perms.length} permission(s)
+                            {perms.length} permission{perms.length > 1 ? "s" : ""}
                           </span>
                         </div>
+
+                        {/* Permission cards — read-only + assign button */}
                         <div className="p-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                          {perms.map((p) => (
-                            <div key={p.id} className="p-3 bg-white rounded-lg border border-[#E0DACB]/80 space-y-2 shadow-2xs hover:border-[#1C1917]/40 transition-colors">
-                              <div className="font-bold text-xs text-[#1C1917] flex items-center justify-between">
-                                <span>{p.nom}</span>
-                                <div className="flex items-center gap-1">
-                                  <button
-                                    onClick={() => handleOpenEditPermission(p)}
-                                    className="p-1 rounded text-[#78716C] hover:text-[#1C1917] hover:bg-[#FAF8F2]"
-                                    title="Éditer la permission"
-                                  >
-                                    <Pencil className="w-3 h-3" />
-                                  </button>
-                                  <button
-                                    onClick={() => handleDeletePermission(p.id, p.nom)}
-                                    className="p-1 rounded text-[#78716C] hover:text-[#DC2626] hover:bg-rose-50"
-                                    title="Supprimer la permission"
-                                  >
-                                    <Trash2 className="w-3 h-3" />
-                                  </button>
+                          {perms.map((p) => {
+                            // Which roles already have this permission?
+                            const rolesWithPerm = rolesList.filter((r) =>
+                              r.permissions_details?.some((rp) => rp.id === p.id)
+                            );
+                            return (
+                              <div
+                                key={p.id}
+                                className="p-3 bg-white rounded-xl border border-[#E0DACB]/80 space-y-2.5 shadow-2xs hover:border-[#483C2C]/30 transition-colors"
+                              >
+                                {/* Name + code */}
+                                <div>
+                                  <div className="font-bold text-xs text-[#1C1917]">{p.nom}</div>
+                                  <div className="font-mono text-[10px] text-[#78716C] bg-[#FAF8F2] px-1.5 py-0.5 rounded border border-[#E0DACB]/50 w-fit mt-1">
+                                    {p.code}
+                                  </div>
                                 </div>
+
+                                {/* Roles that have this permission */}
+                                {rolesWithPerm.length > 0 && (
+                                  <div className="flex flex-wrap gap-1">
+                                    {rolesWithPerm.map((r) => (
+                                      <span
+                                        key={r.id}
+                                        className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium"
+                                      >
+                                        <Check className="w-2.5 h-2.5" />
+                                        {r.nom}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {/* Assign button */}
+                                <button
+                                  onClick={() => handleOpenAssign(p)}
+                                  className="w-full text-[11px] font-semibold text-[#483C2C] border border-[#483C2C]/40 hover:bg-[#483C2C] hover:text-white rounded-lg py-1.5 transition-all"
+                                >
+                                  Assigner à un rôle
+                                </button>
                               </div>
-                              <div className="font-mono text-[11px] text-[#78716C] bg-[#FAF8F2] px-2 py-0.5 rounded border border-[#E0DACB]/50 w-fit">
-                                code: {p.code}
-                              </div>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
                     ))}
@@ -691,23 +701,12 @@ export default function RolesPermissionsUsersPage() {
             <form onSubmit={handleSaveUser} className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-[#78716C]">Nom d'utilisateur *</label>
-                  <Input
-                    value={userUsername}
-                    onChange={(e) => setUserUsername(e.target.value)}
-                    required
-                    placeholder="j.dupont"
-                  />
+                  <label className="text-xs font-medium text-[#78716C]">Nom d&apos;utilisateur *</label>
+                  <Input value={userUsername} onChange={(e) => setUserUsername(e.target.value)} required placeholder="j.dupont" />
                 </div>
                 <div>
                   <label className="text-xs font-medium text-[#78716C]">E-mail *</label>
-                  <Input
-                    type="email"
-                    value={userEmail}
-                    onChange={(e) => setUserEmail(e.target.value)}
-                    required
-                    placeholder="jean.dupont@entreprise.tn"
-                  />
+                  <Input type="email" value={userEmail} onChange={(e) => setUserEmail(e.target.value)} required placeholder="jean.dupont@entreprise.tn" />
                 </div>
               </div>
 
@@ -715,84 +714,45 @@ export default function RolesPermissionsUsersPage() {
                 <label className="text-xs font-medium text-[#78716C]">
                   {editingUserId ? "Nouveau Mot de Passe (laisser vide si inchangé)" : "Mot de passe *"}
                 </label>
-                <Input
-                  type="password"
-                  value={userPassword}
-                  onChange={(e) => setUserPassword(e.target.value)}
-                  required={!editingUserId}
-                  placeholder="••••••••"
-                />
+                <Input type="password" value={userPassword} onChange={(e) => setUserPassword(e.target.value)} required={!editingUserId} placeholder="••••••••" />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-medium text-[#78716C]">Prénom</label>
-                  <Input
-                    value={userFirstName}
-                    onChange={(e) => setUserFirstName(e.target.value)}
-                    placeholder="Jean"
-                  />
+                  <Input value={userFirstName} onChange={(e) => setUserFirstName(e.target.value)} placeholder="Jean" />
                 </div>
                 <div>
                   <label className="text-xs font-medium text-[#78716C]">Nom</label>
-                  <Input
-                    value={userLastName}
-                    onChange={(e) => setUserLastName(e.target.value)}
-                    placeholder="Dupont"
-                  />
+                  <Input value={userLastName} onChange={(e) => setUserLastName(e.target.value)} placeholder="Dupont" />
                 </div>
               </div>
 
               <div>
                 <label className="text-xs font-medium text-[#78716C]">Téléphone</label>
-                <Input
-                  value={userTelephone}
-                  onChange={(e) => setUserTelephone(e.target.value)}
-                  placeholder="+216 20 123 456"
-                />
+                <Input value={userTelephone} onChange={(e) => setUserTelephone(e.target.value)} placeholder="+216 20 123 456" />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-[#78716C]">Rôle d'Accès</label>
-                  <select
-                    value={userRoleId}
-                    onChange={(e) => setUserRoleId(e.target.value ? Number(e.target.value) : "")}
-                    className="w-full bg-white border border-[#E0DACB] rounded-xl text-xs p-2.5 outline-none focus:ring-1 focus:ring-[#1C1917]"
-                  >
+                  <label className="text-xs font-medium text-[#78716C]">Rôle d&apos;Accès</label>
+                  <select value={userRoleId} onChange={(e) => setUserRoleId(e.target.value ? Number(e.target.value) : "")} className="w-full bg-white border border-[#E0DACB] rounded-xl text-xs p-2.5 outline-none focus:ring-1 focus:ring-[#483C2C]">
                     <option value="">-- Aucun rôle --</option>
-                    {rolesList.map((r) => (
-                      <option key={r.id} value={r.id}>
-                        {r.nom} ({r.entreprise_nom || "Global"})
-                      </option>
-                    ))}
+                    {rolesList.map((r) => (<option key={r.id} value={r.id}>{r.nom} ({r.entreprise_nom || "Global"})</option>))}
                   </select>
                 </div>
-
                 <div>
                   <label className="text-xs font-medium text-[#78716C]">Département</label>
-                  <select
-                    value={userDeptId}
-                    onChange={(e) => setUserDeptId(e.target.value ? Number(e.target.value) : "")}
-                    className="w-full bg-white border border-[#E0DACB] rounded-xl text-xs p-2.5 outline-none focus:ring-1 focus:ring-[#1C1917]"
-                  >
+                  <select value={userDeptId} onChange={(e) => setUserDeptId(e.target.value ? Number(e.target.value) : "")} className="w-full bg-white border border-[#E0DACB] rounded-xl text-xs p-2.5 outline-none focus:ring-1 focus:ring-[#483C2C]">
                     <option value="">-- Aucun département --</option>
-                    {departementsList.map((d) => (
-                      <option key={d.id} value={d.id}>
-                        {d.nom}
-                      </option>
-                    ))}
+                    {departementsList.map((d) => (<option key={d.id} value={d.id}>{d.nom}</option>))}
                   </select>
                 </div>
               </div>
 
               <div className="flex justify-end gap-2 pt-3 border-t border-[#E0DACB]/50">
-                <Button type="button" variant="outline" onClick={() => setIsUserModalOpen(false)}>
-                  Annuler
-                </Button>
-                <Button type="submit" className="bg-[#1C1917] text-white">
-                  Enregistrer
-                </Button>
+                <Button type="button" variant="outline" onClick={() => setIsUserModalOpen(false)}>Annuler</Button>
+                <Button type="submit" className="bg-[#483C2C] text-white">Enregistrer</Button>
               </div>
             </form>
           </div>
@@ -809,27 +769,15 @@ export default function RolesPermissionsUsersPage() {
             <form onSubmit={handleSaveRole} className="space-y-4">
               <div>
                 <label className="text-xs font-medium text-[#78716C]">Nom du Rôle *</label>
-                <Input
-                  value={roleNom}
-                  onChange={(e) => setRoleNom(e.target.value)}
-                  required
-                  placeholder="Ex: Agent de Saisie"
-                />
+                <Input value={roleNom} onChange={(e) => setRoleNom(e.target.value)} required placeholder="Ex: Agent de Saisie" />
               </div>
-
               <div>
                 <label className="text-xs font-medium text-[#78716C]">Description</label>
-                <Input
-                  value={roleDescription}
-                  onChange={(e) => setRoleDescription(e.target.value)}
-                  placeholder="Description des responsabilités..."
-                />
+                <Input value={roleDescription} onChange={(e) => setRoleDescription(e.target.value)} placeholder="Description des responsabilités..." />
               </div>
 
               <div>
-                <label className="text-xs font-medium text-[#78716C] mb-2 block">
-                  Permissions à attribuer
-                </label>
+                <label className="text-xs font-medium text-[#78716C] mb-2 block">Permissions à attribuer</label>
                 {permissionsList.length === 0 ? (
                   <p className="text-xs text-[#78716C]">Aucune permission disponible dans le système.</p>
                 ) : (
@@ -841,15 +789,12 @@ export default function RolesPermissionsUsersPage() {
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pl-2">
                           {perms.map((p) => (
-                            <label
-                              key={p.id}
-                              className="flex items-center gap-2 text-xs cursor-pointer hover:bg-[#FAF8F2] p-1.5 rounded-lg border border-transparent hover:border-[#E0DACB]/60"
-                            >
+                            <label key={p.id} className="flex items-center gap-2 text-xs cursor-pointer hover:bg-[#FAF8F2] p-1.5 rounded-lg border border-transparent hover:border-[#E0DACB]/60">
                               <input
                                 type="checkbox"
                                 checked={selectedPermissions.includes(p.id)}
                                 onChange={() => togglePermission(p.id)}
-                                className="rounded border-gray-300 text-[#1C1917] focus:ring-[#1C1917]"
+                                className="rounded border-gray-300 text-[#483C2C] focus:ring-[#483C2C]"
                               />
                               <span className="font-semibold text-[#1C1917]">{p.nom}</span>
                             </label>
@@ -862,74 +807,72 @@ export default function RolesPermissionsUsersPage() {
               </div>
 
               <div className="flex justify-end gap-2 pt-2 border-t border-[#E0DACB]/50">
-                <Button type="button" variant="outline" onClick={() => setIsRoleModalOpen(false)}>
-                  Annuler
-                </Button>
-                <Button type="submit" className="bg-[#1C1917] text-white">
-                  Enregistrer
-                </Button>
+                <Button type="button" variant="outline" onClick={() => setIsRoleModalOpen(false)}>Annuler</Button>
+                <Button type="submit" className="bg-[#483C2C] text-white">Enregistrer</Button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* PERMISSION MODAL (Create / Edit) */}
-      {isPermModalOpen && (
+      {/* PERMISSION ASSIGN MODAL */}
+      {isAssignModalOpen && assigningPermission && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4 border border-[#E0DACB]">
-            <h2 className="text-lg font-bold text-[#1C1917]">
-              {editingPermId ? "Modifier la Permission" : "Nouvelle Permission Système"}
-            </h2>
-            <form onSubmit={handleSavePermission} className="space-y-3">
+            <div className="flex items-start justify-between">
               <div>
-                <label className="text-xs font-medium text-[#78716C]">Nom de la permission *</label>
-                <Input
-                  value={permNom}
-                  onChange={(e) => setPermNom(e.target.value)}
-                  required
-                  placeholder="ex: Gérer les immobilisations"
-                />
+                <h2 className="text-base font-bold text-[#1C1917]">Assigner la permission</h2>
+                <p className="text-xs text-[#78716C] mt-0.5">Choisissez un rôle pour y ajouter cette permission.</p>
               </div>
+              <button onClick={() => setIsAssignModalOpen(false)} className="p-1 rounded-lg hover:bg-[#FAF8F2] text-[#78716C]">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
 
-              <div>
-                <label className="text-xs font-medium text-[#78716C]">Code système (unique) *</label>
-                <Input
-                  value={permCode}
-                  onChange={(e) => setPermCode(e.target.value)}
-                  required
-                  placeholder="ex: manage_immobilisations"
-                />
-              </div>
+            {/* Permission info card */}
+            <div className="bg-[#FAF8F2] border border-[#E0DACB] rounded-xl p-3 space-y-1">
+              <div className="font-bold text-sm text-[#1C1917]">{assigningPermission.nom}</div>
+              <div className="font-mono text-[11px] text-[#78716C]">{assigningPermission.code}</div>
+              <div className="text-[11px] text-[#A8A29E] uppercase tracking-wide">{assigningPermission.module}</div>
+            </div>
 
-              <div>
-                <label className="text-xs font-medium text-[#78716C]">Module *</label>
-                <select
-                  value={permModule}
-                  onChange={(e) => setPermModule(e.target.value)}
-                  className="w-full bg-white border border-[#E0DACB] rounded-xl text-xs p-2.5 outline-none focus:ring-1 focus:ring-[#1C1917]"
-                  required
-                >
-                  <option value="immobilisations">immobilisations</option>
-                  <option value="users">users</option>
-                  <option value="maintenance">maintenance</option>
-                  <option value="entreprises">entreprises</option>
-                  <option value="familles">familles</option>
-                  <option value="emplacements">emplacements</option>
-                  <option value="amortissements">amortissements</option>
-                  <option value="Général">Général</option>
-                </select>
+            {assignSuccess ? (
+              <div className="flex flex-col items-center gap-3 py-4">
+                <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                  <Check className="w-5 h-5 text-emerald-600" />
+                </div>
+                <p className="text-sm font-semibold text-[#1C1917]">Permission assignée avec succès !</p>
+                <Button variant="outline" onClick={() => setIsAssignModalOpen(false)}>Fermer</Button>
               </div>
-
-              <div className="flex justify-end gap-2 pt-3 border-t border-[#E0DACB]/50">
-                <Button type="button" variant="outline" onClick={() => setIsPermModalOpen(false)}>
-                  Annuler
-                </Button>
-                <Button type="submit" className="bg-[#1C1917] text-white">
-                  {editingPermId ? "Enregistrer" : "Créer"}
-                </Button>
-              </div>
-            </form>
+            ) : (
+              <form onSubmit={handleAssignPermission} className="space-y-4">
+                <div>
+                  <label className="text-xs font-semibold text-[#1C1917] mb-1.5 block">Sélectionner un rôle *</label>
+                  <select
+                    value={assignRoleId}
+                    onChange={(e) => setAssignRoleId(e.target.value ? Number(e.target.value) : "")}
+                    required
+                    className="w-full bg-white border border-[#E0DACB] rounded-xl text-sm p-2.5 outline-none focus:ring-1 focus:ring-[#483C2C]"
+                  >
+                    <option value="">-- Choisir un rôle --</option>
+                    {rolesList.map((r) => {
+                      const alreadyHas = r.permissions_details?.some((rp) => rp.id === assigningPermission.id);
+                      return (
+                        <option key={r.id} value={r.id} disabled={alreadyHas}>
+                          {r.nom} {alreadyHas ? "✓ déjà assigné" : ""}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+                <div className="flex justify-end gap-2 pt-1">
+                  <Button type="button" variant="outline" onClick={() => setIsAssignModalOpen(false)}>Annuler</Button>
+                  <Button type="submit" disabled={!assignRoleId || assignSaving} className="bg-[#483C2C] text-white">
+                    {assignSaving ? "Assignation..." : "Assigner"}
+                  </Button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}

@@ -139,7 +139,7 @@ export default function CreerEntreprisePage() {
                     Format recommandé: PNG, JPG ou SVG (max 2 Mo).
                   </p>
                   <div className="flex flex-wrap items-center gap-2 justify-center sm:justify-start">
-                    <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#1C1917] text-white hover:bg-[#2C2927] transition-colors shadow-2xs">
+                    <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#483C2C] text-white hover:bg-[#382E22] transition-colors shadow-2xs">
                       <Upload className="w-3.5 h-3.5" />
                       <span>{logo ? "Changer le logo" : "Télécharger un logo"}</span>
                       <input
@@ -241,7 +241,7 @@ export default function CreerEntreprisePage() {
                 <Button
                   type="submit"
                   disabled={saving}
-                  className="bg-[#1C1917] text-white hover:bg-[#2C2927]"
+                  className="bg-[#483C2C] text-white hover:bg-[#382E22]"
                 >
                   <Save className="w-4 h-4 mr-2" />
                   {saving ? "Création en cours..." : "Enregistrer l'entreprise"}

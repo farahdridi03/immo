@@ -305,7 +305,7 @@ export default function EntrepriseDetailPage({
           <div className="flex items-center gap-2 flex-wrap">
             <Button
               onClick={handleOpenAddDept}
-              className="bg-[#1C1917] text-white hover:bg-[#332F2C] shadow-xs"
+              className="bg-[#483C2C] text-white hover:bg-[#382E22] shadow-xs"
             >
               <Plus className="w-4 h-4 mr-1.5" />
               Ajouter un département
@@ -486,7 +486,7 @@ export default function EntrepriseDetailPage({
                 >
                   Annuler
                 </Button>
-                <Button type="submit" className="bg-[#1C1917] text-white">
+                <Button type="submit" className="bg-[#483C2C] text-white">
                   {editingDeptId ? "Enregistrer" : "Créer"}
                 </Button>
               </div>

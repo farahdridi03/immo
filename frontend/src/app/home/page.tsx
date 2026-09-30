@@ -2,19 +2,16 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Sparkles, ShieldCheck, Server } from "lucide-react";
-import { Logo } from "@/components/ui/Logo";
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-[#FAF7F2] text-[#1C1917] flex flex-col justify-between">
       {/* Top Public Header */}
-      <header className="h-20 w-full max-w-7xl mx-auto px-6 sm:px-8 flex items-center justify-between">
-        {/* Brand Logo */}
-        <Logo variant="dark" textSize="text-lg" />
-
-        {/* Center Nav Links */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[#57534E]">
+      <header className="h-20 w-full max-w-7xl mx-auto px-6 sm:px-8 flex items-center relative">
+        {/* Center Nav Links — absolutely centered */}
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[#57534E] absolute left-1/2 -translate-x-1/2">
           <a href="#features" className="hover:text-[#1C1917] transition-colors">
             Fonctionnalités
           </a>
@@ -27,7 +24,7 @@ export default function HomePage() {
         </nav>
 
         {/* Right Action Buttons */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 ml-auto">
           <Link
             href="/login"
             className="text-sm font-semibold text-[#1C1917] hover:underline px-2 py-1"
@@ -38,7 +35,7 @@ export default function HomePage() {
             href="/inscription"
             className="bg-[#483C2C] hover:bg-[#382E22] text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-xs transition-all"
           >
-            S'inscrire
+            S&apos;inscrire
           </Link>
         </div>
       </header>
@@ -46,7 +43,31 @@ export default function HomePage() {
       {/* Main Hero Section */}
       <main className="max-w-7xl mx-auto px-6 sm:px-8 py-12 lg:py-16 my-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
         {/* Left Column Text & CTA */}
-        <div className="lg:col-span-6 space-y-6">
+        <div className="lg:col-span-6 space-y-7">
+
+          {/* Hero Logo — big & centered on mobile, left on desktop */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+            <div className="relative">
+              <div className="absolute -inset-3 bg-[#483C2C]/8 rounded-3xl blur-xl" />
+              <Image
+                src="/gestimmo-logo.jpg"
+                alt="Gestimmo"
+                width={160}
+                height={160}
+                className="relative object-contain drop-shadow-md"
+                priority
+              />
+            </div>
+            <div>
+              <h2 className="text-4xl sm:text-5xl font-black tracking-tight leading-none">
+                <span className="text-[#5C3317]">Gest</span><span className="text-[#A0683C]">immo</span>
+              </h2>
+              <p className="text-sm text-[#78716C] mt-1 font-medium tracking-wide uppercase">
+                Gestion des immobilisations
+              </p>
+            </div>
+          </div>
+
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-white border border-[#E0DACB] text-[#1C1917] text-xs font-medium px-3.5 py-1.5 rounded-full shadow-2xs">
             <Sparkles className="w-3.5 h-3.5 text-[#B45309]" />
@@ -54,18 +75,18 @@ export default function HomePage() {
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#1C1917] tracking-tight leading-[1.12]">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1C1917] tracking-tight leading-[1.15]">
             Vos immobilisations, <br />
             enfin sous contrôle.
           </h1>
 
           {/* Subtitle */}
           <p className="text-base sm:text-lg text-[#78716C] leading-relaxed max-w-xl font-normal">
-            Suivez votre inventaire, automatisez l'amortissement et planifiez la maintenance — tout au même endroit, sans complexité.
+            Suivez votre inventaire, automatisez l&apos;amortissement et planifiez la maintenance — tout au même endroit, sans complexité.
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3.5 pt-2">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3.5 pt-1">
             <Link
               href="/inscription"
               className="inline-flex items-center justify-center gap-2 bg-[#483C2C] hover:bg-[#382E22] text-white font-medium text-sm px-6 py-3.5 rounded-xl shadow-xs transition-all"
@@ -78,12 +99,12 @@ export default function HomePage() {
               href="/login"
               className="inline-flex items-center justify-center gap-2 bg-white border border-[#E0DACB] hover:bg-[#FAF8F2] text-[#1C1917] font-medium text-sm px-6 py-3.5 rounded-xl shadow-2xs transition-all"
             >
-              <span>Voir la démo</span>
+              <span>Se connecter</span>
             </Link>
           </div>
 
           {/* Guarantee Note */}
-          <div className="flex items-center gap-2 text-xs text-[#8C857B] font-medium pt-2">
+          <div className="flex items-center gap-2 text-xs text-[#8C857B] font-medium">
             <ShieldCheck className="w-4 h-4 text-[#16A34A]" />
             <span>Demande sans engagement · Validation personnalisée</span>
           </div>
@@ -96,9 +117,9 @@ export default function HomePage() {
               {/* Card Header */}
               <div className="flex items-center justify-between pb-1">
                 <div>
-                  <div className="text-[11px] text-[#78716C]">Vue d'ensemble</div>
+                  <div className="text-[11px] text-[#78716C]">Vue d&apos;ensemble</div>
                   <div className="text-sm font-bold text-[#1C1917]">
-                    Parc d'immobilisations
+                    Parc d&apos;immobilisations
                   </div>
                 </div>
                 <span className="bg-[#E6F4EA] text-[#16A34A] text-xs font-semibold px-2.5 py-1 rounded-full">
@@ -169,7 +190,7 @@ export default function HomePage() {
                       Serveur principal · IT-00482
                     </div>
                     <div className="text-[10px] text-[#78716C]">
-                      Siège · Affecté à l'équipe IT
+                      Siège · Affecté à l&apos;équipe IT
                     </div>
                   </div>
                 </div>
@@ -184,7 +205,7 @@ export default function HomePage() {
 
       {/* Simple Footer */}
       <footer className="w-full border-t border-[#EFECE6] py-6 text-center text-xs text-[#78716C]">
-        © 2026 Gestimo. Tous droits réservés.
+        © 2026 Gestimmo. Tous droits réservés.
       </footer>
     </div>
   );

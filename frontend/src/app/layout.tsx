@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Gestimo — Gestion des immobilisations",
+  title: "Gestimmo — Gestion des immobilisations",
   description: "Plateforme de gestion et suivi des immobilisations",
 };
 

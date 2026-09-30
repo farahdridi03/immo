@@ -430,7 +430,7 @@ export default function ImmobilisationDetailPage({
                   <Button
                     onClick={handleOpenTransferModal}
                     size="sm"
-                    className="w-full text-xs h-8 bg-[#1C1917] hover:bg-[#332E2B] text-white flex items-center justify-center gap-1.5 mt-2"
+                    className="w-full text-xs h-8 bg-[#483C2C] hover:bg-[#382E22] text-white flex items-center justify-center gap-1.5 mt-2"
                   >
                     <ArrowRightLeft className="w-3.5 h-3.5" />
                     <span>Transférer le bien</span>
@@ -497,7 +497,7 @@ export default function ImmobilisationDetailPage({
             <Button
               onClick={handleOpenTransferModal}
               size="sm"
-              className="bg-[#1C1917] hover:bg-[#332E2B] text-white text-xs flex items-center gap-1.5"
+              className="bg-[#483C2C] hover:bg-[#382E22] text-white text-xs flex items-center gap-1.5"
             >
               <ArrowRightLeft className="w-3.5 h-3.5" />
               <span>Nouveau transfert</span>
@@ -704,7 +704,7 @@ export default function ImmobilisationDetailPage({
                 <Button type="button" variant="outline" onClick={() => setIsTransferModalOpen(false)}>
                   Annuler
                 </Button>
-                <Button type="submit" disabled={transferring} className="bg-[#1C1917] hover:bg-[#332E2B] text-white">
+                <Button type="submit" disabled={transferring} className="bg-[#483C2C] hover:bg-[#382E22] text-white">
                   {transferring ? (
                     <Loader2 className="w-4 h-4 animate-spin mr-1" />
                   ) : (

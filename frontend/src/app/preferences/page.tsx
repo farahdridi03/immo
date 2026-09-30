@@ -124,7 +124,7 @@ export default function PreferencesPage() {
         <button
           onClick={handleSubmit}
           disabled={saving}
-          className="flex items-center gap-2 px-5 py-2.5 bg-[#1C1917] hover:bg-[#332E2B] text-white text-xs font-semibold rounded-xl transition-all shadow-sm cursor-pointer disabled:opacity-50 self-start sm:self-auto"
+          className="flex items-center gap-2 px-5 py-2.5 bg-[#483C2C] hover:bg-[#382E22] text-white text-xs font-semibold rounded-xl transition-all shadow-sm cursor-pointer disabled:opacity-50 self-start sm:self-auto"
         >
           {saving ? (
             <Loader2 className="w-4 h-4 animate-spin text-white" />
@@ -176,7 +176,7 @@ export default function PreferencesPage() {
               type="button"
               onClick={() => handleToggle("notif_inapp_enabled")}
               className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                preferences.notif_inapp_enabled ? "bg-[#1C1917]" : "bg-gray-300"
+                preferences.notif_inapp_enabled ? "bg-[#483C2C]" : "bg-gray-300"
               }`}
             >
               <span
@@ -362,7 +362,7 @@ export default function PreferencesPage() {
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 px-6 py-3 bg-[#1C1917] hover:bg-[#332E2B] text-white text-xs font-semibold rounded-xl transition-all shadow-md cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-3 bg-[#483C2C] hover:bg-[#382E22] text-white text-xs font-semibold rounded-xl transition-all shadow-md cursor-pointer disabled:opacity-50"
           >
             {saving ? (
               <Loader2 className="w-4 h-4 animate-spin text-white" />

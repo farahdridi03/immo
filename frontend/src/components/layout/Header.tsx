@@ -236,7 +236,7 @@ export function Header() {
         {/* QR Scanner Trigger */}
         <button
           onClick={() => setIsQrScannerOpen(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1C1917] text-white hover:bg-[#332E2B] transition-colors text-xs font-semibold shadow-2xs cursor-pointer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#483C2C] text-white hover:bg-[#382E22] transition-colors text-xs font-semibold shadow-2xs cursor-pointer"
           title="Scanner un QR Code d'immobilisation"
         >
           <QrCode className="w-3.5 h-3.5" />
@@ -265,7 +265,7 @@ export function Header() {
             aria-expanded={isMenuOpen}
             aria-haspopup="true"
           >
-            <div className="h-9 w-9 rounded-full bg-[#1C1917] text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform overflow-hidden">
+            <div className="h-9 w-9 rounded-full bg-[#483C2C] text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform overflow-hidden">
               {user?.avatar ? (
                 <img src={user.avatar} alt={userName} className="w-full h-full object-cover" />
               ) : (
@@ -327,7 +327,7 @@ export function Header() {
 
       {/* Real-time WebSocket Alert Toast Notification */}
       {toastAlert && (
-        <div className="fixed bottom-6 right-6 z-50 max-w-sm w-full bg-[#1C1917] text-white p-4 rounded-2xl shadow-2xl border border-stone-700 animate-in slide-in-from-bottom-5 duration-300 flex items-start gap-3">
+        <div className="fixed bottom-6 right-6 z-50 max-w-sm w-full bg-[#483C2C] text-white p-4 rounded-2xl shadow-2xl border border-stone-700 animate-in slide-in-from-bottom-5 duration-300 flex items-start gap-3">
           <div className="p-2.5 bg-amber-500/20 text-amber-400 rounded-xl shrink-0 mt-0.5">
             <Bell className="w-5 h-5 animate-pulse" />
           </div>

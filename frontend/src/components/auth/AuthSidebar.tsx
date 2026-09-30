@@ -2,14 +2,26 @@
 
 import React from "react";
 import { Check } from "lucide-react";
-import { Logo } from "@/components/ui/Logo";
+import Image from "next/image";
+import Link from "next/link";
 
 export function AuthSidebar() {
   return (
     <div className="hidden lg:flex lg:w-1/2 bg-[#483C2C] text-white p-12 flex-col justify-between relative overflow-hidden min-h-screen">
       {/* Top Brand Logo */}
       <div>
-        <Logo variant="light" textSize="text-lg" />
+        <Link href="/" className="inline-block">
+          <div className="bg-white rounded-2xl p-3 inline-flex shadow-lg">
+            <Image
+              src="/gestimmo-logo.jpg"
+              alt="Gestimmo logo"
+              width={130}
+              height={130}
+              className="object-contain"
+              priority
+            />
+          </div>
+        </Link>
       </div>
 
       {/* Hero Content */}
@@ -49,7 +61,7 @@ export function AuthSidebar() {
 
       {/* Footer Branding */}
       <div className="text-xs text-[#A89D91]">
-        Gestimo · Gestion des immobilisations
+        Gestimmo · Gestion des immobilisations
       </div>
     </div>
   );

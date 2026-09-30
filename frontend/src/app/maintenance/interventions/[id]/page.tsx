@@ -197,7 +197,7 @@ export default function InterventionDetailPage({
 
           <Button
             onClick={() => setIsEditModalOpen(true)}
-            className="flex items-center gap-2 bg-[#1C1917] hover:bg-[#332E2B] text-white"
+            className="flex items-center gap-2 bg-[#483C2C] hover:bg-[#382E22] text-white"
           >
             <Edit className="w-4 h-4" />
             <span>Modifier Intervention</span>

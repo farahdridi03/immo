@@ -371,7 +371,7 @@ export function QrScannerModal({ isOpen, onClose }: QrScannerModalProps) {
               <p className="text-[11px] text-muted-foreground mb-4">
                 Formats acceptés : PNG, JPG, JPEG, WebP
               </p>
-              <label className="inline-flex items-center gap-2 px-4 py-2 bg-[#1C1917] text-white text-xs font-semibold rounded-xl cursor-pointer hover:bg-[#332E2B] transition-colors">
+              <label className="inline-flex items-center gap-2 px-4 py-2 bg-[#483C2C] text-white text-xs font-semibold rounded-xl cursor-pointer hover:bg-[#382E22] transition-colors">
                 <Upload className="w-3.5 h-3.5" />
                 <span>Sélectionner une photo</span>
                 <input
@@ -406,7 +406,7 @@ export function QrScannerModal({ isOpen, onClose }: QrScannerModalProps) {
                   className="text-xs h-10"
                   autoFocus
                 />
-                <Button type="submit" disabled={loading || !manualCode} className="h-10 px-4 bg-[#1C1917] hover:bg-[#332E2B] text-white shrink-0">
+                <Button type="submit" disabled={loading || !manualCode} className="h-10 px-4 bg-[#483C2C] hover:bg-[#382E22] text-white shrink-0">
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
                 </Button>
               </div>

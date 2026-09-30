@@ -400,7 +400,7 @@ export default function AlertesPage() {
                             router.push(targetLink);
                           }}
                           title="Voir"
-                          className="p-1.5 rounded-xl border border-[#E0DACB] bg-white hover:bg-[#1C1917] hover:text-white text-[#1C1917] transition-all shadow-2xs"
+                          className="p-1.5 rounded-xl border border-[#E0DACB] bg-white hover:bg-[#483C2C] hover:text-white text-[#1C1917] transition-all shadow-2xs"
                         >
                           <ExternalLink className="w-4 h-4" />
                         </button>
@@ -494,7 +494,7 @@ export default function AlertesPage() {
             <button
               type="submit"
               disabled={savingSettings}
-              className="flex items-center gap-2 px-5 py-2.5 bg-[#1C1917] hover:bg-[#332E2B] text-white text-xs font-semibold rounded-xl transition-all shadow-sm cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#483C2C] hover:bg-[#382E22] text-white text-xs font-semibold rounded-xl transition-all shadow-sm cursor-pointer disabled:opacity-50"
             >
               {savingSettings ? (
                 <Loader2 className="w-4 h-4 animate-spin text-white" />
