@@ -28,8 +28,10 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-default-change-in-env-file
 DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "t")
 
 # ALLOWED_HOSTS configuration
-ALLOWED_HOSTS_ENV = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,0.0.0.0")
+ALLOWED_HOSTS_ENV = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,0.0.0.0,backend")
 ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_ENV.split(",") if host.strip()]
+if "backend" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append("backend")
 
 # Application definition
 INSTALLED_APPS = [
@@ -90,6 +92,7 @@ SIMPLE_JWT = {
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",  # CORS middleware must be placed before CommonMiddleware
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -121,11 +124,11 @@ WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
 # Database Configuration — PostgreSQL
-POSTGRES_DB = os.getenv("POSTGRES_DB")
-POSTGRES_USER = os.getenv("POSTGRES_USER")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
-POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
+POSTGRES_DB = os.getenv("POSTGRES_DB") or os.getenv("DB_NAME")
+POSTGRES_USER = os.getenv("POSTGRES_USER") or os.getenv("DB_USER")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD") or os.getenv("DB_PASSWORD")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST") or os.getenv("DB_HOST", "localhost")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT") or os.getenv("DB_PORT", "5432")
 
 DATABASES = {
     "default": {
@@ -177,7 +180,7 @@ SIMPLE_JWT = {
 # CORS Configuration
 CORS_ALLOWED_ORIGINS_ENV = os.getenv(
     "CORS_ALLOWED_ORIGINS",
-    "http://localhost:3000,http://127.0.0.1:3000"
+    "http://localhost:3000,http://127.0.0.1:3000,http://localhost,http://127.0.0.1"
 )
 CORS_ALLOWED_ORIGINS = [
     origin.strip() for origin in CORS_ALLOWED_ORIGINS_ENV.split(",") if origin.strip()
@@ -207,7 +210,7 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Media files (Uploaded logos, documents)
@@ -234,3 +237,4 @@ EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() in ('true', '1', 't')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', config('EMAIL_HOST_USER', default=''))
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', config('EMAIL_HOST_PASSWORD', default=''))
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', config('DEFAULT_FROM_EMAIL', default=EMAIL_HOST_USER or 'noreply@gestimmo.tn'))
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:3000/login')

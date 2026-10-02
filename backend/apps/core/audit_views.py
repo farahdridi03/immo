@@ -26,11 +26,19 @@ class AuditTrailView(APIView):
 
         audit_entries = []
 
+        # Allow superuser to filter by enterprise query param if provided
+        target_entreprise_id = request.query_params.get("entreprise_id")
+        if is_superuser and target_entreprise_id:
+            from apps.users.models import Entreprise
+            target_ent = Entreprise.objects.filter(id=target_entreprise_id).first()
+            if target_ent:
+                entreprise = target_ent
+
         # Non-superuser without enterprise can see no records
         if not is_superuser and not entreprise:
             return Response([], status=status.HTTP_200_OK)
 
-        # Helper to apply enterprise scoping
+        # Helper to apply enterprise scoping and exclude system admin
         def get_filtered_qs(history_manager, relation_path=None):
             qs = history_manager.select_related("history_user")
             if entreprise:
@@ -38,17 +46,39 @@ class AuditTrailView(APIView):
                     qs = qs.filter(
                         Q(immobilisation__entreprise=entreprise)
                         | Q(contrat__entreprise=entreprise)
-                        | Q(history_user__entreprise=entreprise)
                     )
                 elif relation_path == "immobilisation":
-                    qs = qs.filter(
-                        Q(immobilisation__entreprise=entreprise)
-                        | Q(history_user__entreprise=entreprise)
-                    )
+                    qs = qs.filter(immobilisation__entreprise=entreprise)
+                elif relation_path == "user":
+                    qs = qs.filter(entreprise=entreprise, is_superuser=False)
                 else:
+                    qs = qs.filter(entreprise=entreprise)
+            elif not is_superuser:
+                return qs.none()
+            else:
+                # If superuser without enterprise filter: only return enterprise-owned records
+                if relation_path == "user":
+                    qs = qs.filter(is_superuser=False, entreprise__isnull=False)
+                elif relation_path == "intervention":
                     qs = qs.filter(
-                        Q(entreprise=entreprise) | Q(history_user__entreprise=entreprise)
+                        Q(immobilisation__entreprise__isnull=False)
+                        | Q(contrat__entreprise__isnull=False)
                     )
+                elif relation_path == "immobilisation":
+                    qs = qs.filter(immobilisation__entreprise__isnull=False)
+                elif hasattr(history_manager.model, "entreprise"):
+                    qs = qs.filter(entreprise__isnull=False)
+
+            # Strictly exclude system admin actions from audit history:
+            # - No superusers
+            # - No unassigned staff
+            # - No null/system actions ("Système / Admin")
+            qs = qs.exclude(
+                Q(history_user__is_superuser=True)
+                | Q(history_user__is_staff=True, history_user__entreprise__isnull=True)
+                | Q(history_user__isnull=True)
+            )
+
             return qs[:limit]
 
         # Helper to format field diffs
@@ -167,7 +197,7 @@ class AuditTrailView(APIView):
 
         # 5. Utilisateurs
         if entity_filter in ["toutes", "utilisateur"] and hasattr(User, "history"):
-            qs = get_filtered_qs(User.history)
+            qs = get_filtered_qs(User.history, relation_path="user")
             for h in qs:
                 action_label = action_map.get(h.history_type, "Action")
                 obj_repr = f"Utilisateur {h.username} ({h.email})"
@@ -240,6 +270,12 @@ class AuditTrailView(APIView):
                     "objet_concerne": obj_repr,
                     "modifications": diffs,
                 })
+
+        # Double safety: ensure no system admin action can ever be displayed
+        audit_entries = [
+            e for e in audit_entries
+            if e.get("qui") != "Système / Admin" and "dridifarah1126@gmail.com" not in e.get("qui", "")
+        ]
 
         # Sort audit entries by timestamp descending
         audit_entries.sort(key=lambda x: x["quand"], reverse=True)

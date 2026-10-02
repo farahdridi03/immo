@@ -3,7 +3,13 @@ from django.contrib.auth.admin import UserAdmin
 from django.utils import timezone
 
 from .models import Departement, Entreprise, Permission, Role, RolePermission, User
-from .services import approve_entreprise, reject_entreprise
+from .services import (
+    approve_entreprise,
+    reject_entreprise,
+    approve_user,
+    reject_user,
+    send_new_user_credentials_email,
+)
 
 
 @admin.action(description="Approuver les entreprises sélectionnées")
@@ -14,7 +20,7 @@ def approuver_entreprises_action(modeladmin, request, queryset):
         count += 1
     modeladmin.message_user(
         request,
-        f"{count} entreprise(s) approuvée(s) avec succès. Les rôles Admin et comptes administrateurs ont été créés et activés.",
+        f"{count} entreprise(s) approuvée(s) avec succès. Les rôles Admin et comptes administrateurs ont été créés et activés, et les e-mails envoyés.",
     )
 
 
@@ -27,6 +33,30 @@ def rejeter_entreprises_action(modeladmin, request, queryset):
     modeladmin.message_user(
         request,
         f"{count} entreprise(s) rejetée(s). Les comptes administrateurs ont été désactivés.",
+    )
+
+
+@admin.action(description="Approuver les utilisateurs sélectionnés (et leurs entreprises)")
+def approuver_utilisateurs_action(modeladmin, request, queryset):
+    count = 0
+    for user in queryset:
+        approve_user(user)
+        count += 1
+    modeladmin.message_user(
+        request,
+        f"{count} utilisateur(s) approuvé(s) avec succès. Comptes et entreprises activés, e-mails de notification envoyés.",
+    )
+
+
+@admin.action(description="Rejeter / désactiver les utilisateurs sélectionnés")
+def rejeter_utilisateurs_action(modeladmin, request, queryset):
+    count = 0
+    for user in queryset:
+        reject_user(user, motif_rejet="Compte désactivé ou rejeté via l'administration Django.")
+        count += 1
+    modeladmin.message_user(
+        request,
+        f"{count} utilisateur(s) désactivé(s)/rejeté(s).",
     )
 
 
@@ -134,6 +164,8 @@ class CustomUserAdmin(UserAdmin):
         "departement",
     )
 
+    actions = [approuver_utilisateurs_action, rejeter_utilisateurs_action]
+
     fieldsets = tuple(UserAdmin.fieldsets or ()) + (
         (
             "Informations professionnelles",
@@ -150,3 +182,32 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
     )
+
+    def save_model(self, request, obj, form, change):
+        was_inactive = False
+        raw_password = None
+        if not change:
+            if hasattr(form, "cleaned_data") and "password1" in form.cleaned_data:
+                raw_password = form.cleaned_data.get("password1")
+            elif hasattr(form, "cleaned_data") and "password" in form.cleaned_data:
+                raw_password = form.cleaned_data.get("password")
+
+        if change and obj.pk:
+            try:
+                old_user = User.objects.get(pk=obj.pk)
+                was_inactive = (old_user.statut_compte != User.STATUT_ACTIF or not old_user.is_active)
+            except User.DoesNotExist:
+                pass
+
+        super().save_model(request, obj, form, change)
+
+        if not change and obj.email and raw_password:
+            send_new_user_credentials_email(obj, raw_password=raw_password)
+
+        if change:
+            now_active = (obj.statut_compte == User.STATUT_ACTIF and obj.is_active)
+            if was_inactive and now_active:
+                approve_user(obj)
+            elif obj.statut_compte in (User.STATUT_INACTIF, User.STATUT_SUSPENDU) or not obj.is_active:
+                if "statut_compte" in form.changed_data or "is_active" in form.changed_data:
+                    reject_user(obj, motif_rejet="Statut modifié dans l'administration Django")

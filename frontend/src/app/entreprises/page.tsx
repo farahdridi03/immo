@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getMediaUrl } from "@/lib/utils";
 import { entreprisesApi } from "@/services/api/users";
 import type { Entreprise } from "@/types/api";
 
@@ -96,7 +97,7 @@ export default function EntreprisesPage() {
                       <tr key={item.id} className="hover:bg-muted/20">
                         <td className="px-4 py-3 font-semibold flex items-center gap-3">
                           {item.logo ? (
-                            <img src={item.logo} alt={item.nom} className="w-8 h-8 rounded-md object-contain border border-[#E0DACB] p-0.5 bg-white shrink-0" />
+                            <img src={getMediaUrl(item.logo)} alt={item.nom} className="w-8 h-8 rounded-md object-contain border border-[#E0DACB] p-0.5 bg-white shrink-0" />
                           ) : (
                             <div className="w-8 h-8 rounded-md bg-[#EAE3CE] text-[#1C1917] flex items-center justify-center font-bold text-xs shrink-0">
                               {item.nom.charAt(0).toUpperCase()}

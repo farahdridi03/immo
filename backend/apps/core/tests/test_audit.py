@@ -34,21 +34,25 @@ class AuditTrailEnterpriseIsolationTest(APITestCase):
             est_admin_entreprise=True,
         )
 
-        # Create Immobilisation for Enterprise A
-        self.immo_a = Immobilisation.objects.create(
+        # Create Immobilisation for Enterprise A by User A
+        self.immo_a = Immobilisation(
             code_inventaire="INV-A001",
             designation="Laptop A",
             entreprise=self.entreprise_a,
             valeur_acquisition=1000,
         )
+        self.immo_a._history_user = self.user_a
+        self.immo_a.save()
 
-        # Create Immobilisation for Enterprise B
-        self.immo_b = Immobilisation.objects.create(
+        # Create Immobilisation for Enterprise B by User B
+        self.immo_b = Immobilisation(
             code_inventaire="INV-B001",
             designation="Laptop B",
             entreprise=self.entreprise_b,
             valeur_acquisition=2000,
         )
+        self.immo_b._history_user = self.user_b
+        self.immo_b.save()
 
     def test_audit_trail_only_shows_user_entreprise_records(self):
         # Authenticate as User A
@@ -77,19 +81,53 @@ class AuditTrailEnterpriseIsolationTest(APITestCase):
             self.assertNotIn("INV-A001", entry["objet_concerne"])
             self.assertNotIn("admin_a", entry["qui"])
 
+    def test_system_admin_actions_and_records_excluded_for_entreprise(self):
+        # Create a platform superuser (system admin)
+        superuser = User.objects.create_superuser(
+            username="superadmin",
+            email="superadmin@platform.tn",
+            password="SuperPassword123!",
+        )
+
+        # Superuser modifies an immobilisation of Enterprise A
+        self.immo_a.designation = "Laptop A modified by superadmin"
+        self.immo_a._history_user = superuser
+        self.immo_a.save()
+
+        # An action occurs with no user (system action)
+        self.immo_a.designation = "Laptop A modified by system"
+        self.immo_a._history_user = None
+        self.immo_a.save()
+
+        # Authenticate as User A
+        self.client.force_authenticate(user=self.user_a)
+        response = self.client.get("/api/audit-trail/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        entries = response.json()
+
+        # Ensure no system admin actions, superuser, or null/system user appear
+        for entry in entries:
+            self.assertNotIn("superadmin", entry["qui"])
+            self.assertNotIn("Système", entry["qui"])
+            self.assertNotIn("Laptop A modified by superadmin", entry["objet_concerne"])
+            self.assertNotIn("Laptop A modified by system", entry["objet_concerne"])
+
     def test_famille_creation_and_modification_in_audit_trail(self):
         self.client.force_authenticate(user=self.user_a)
 
-        # Create a Famille
-        famille = Famille.objects.create(
+        # Create a Famille by User A
+        famille = Famille(
             nom="Informatique",
             code="FAM-INF",
             description="Matériel informatique",
             entreprise=self.entreprise_a,
         )
+        famille._history_user = self.user_a
+        famille.save()
 
-        # Modify Famille
+        # Modify Famille by User A
         famille.nom = "Informatique & Tech"
+        famille._history_user = self.user_a
         famille.save()
 
         # Fetch audit trail with filter entite=famille
@@ -111,7 +149,7 @@ class AuditTrailEnterpriseIsolationTest(APITestCase):
         self.client.force_authenticate(user=self.user_a)
 
         # Create PlanAmortissement for Enterprise A's immobilisation
-        plan = PlanAmortissement.objects.create(
+        plan = PlanAmortissement(
             immobilisation=self.immo_a,
             valeur_acquisition=1000,
             date_debut_amortissement=datetime.date(2026, 1, 1),
@@ -119,15 +157,20 @@ class AuditTrailEnterpriseIsolationTest(APITestCase):
             taux_amortissement=20.00,
             mode_amortissement=PlanAmortissement.MODE_LINEAIRE,
         )
+        plan._history_user = self.user_a
+        plan.save()
         plan.duree_amortissement = 6
+        plan._history_user = self.user_a
         plan.save()
 
         # Create Role for Enterprise A
-        role = Role.objects.create(
+        role = Role(
             nom="Gestionnaire de Parc",
             description="Accès complet au parc",
             entreprise=self.entreprise_a,
         )
+        role._history_user = self.user_a
+        role.save()
 
         # Test Amortissement audit filter
         res_amort = self.client.get("/api/audit-trail/?entite=amortissement")

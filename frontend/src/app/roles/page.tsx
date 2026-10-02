@@ -34,6 +34,41 @@ import {
   X,
 } from "lucide-react";
 
+const MODULE_CONFIG: Record<string, { label: string; description: string }> = {
+  familles: {
+    label: "Familles d'immobilisations",
+    description: "Classification et catégorisation des familles de biens",
+  },
+  immobilisations: {
+    label: "Immobilisations & Biens",
+    description: "Fiches d'actifs, suivi physique, réformes et inventaires",
+  },
+  emplacements: {
+    label: "Emplacements & Sites",
+    description: "Gestion des sites géographiques, bâtiments, étages et bureaux",
+  },
+  amortissements: {
+    label: "Amortissements Comptables",
+    description: "Calculs, dotations annuelles et tableaux comptables",
+  },
+  maintenance: {
+    label: "Maintenance & Interventions",
+    description: "Contrats de maintenance, prestataires et interventions",
+  },
+  users: {
+    label: "Utilisateurs & Sécurité",
+    description: "Gestion des accès, rôles, permissions et départements",
+  },
+  audit: {
+    label: "Historique & Traçabilité",
+    description: "Journaux d'audit et historique complet des modifications",
+  },
+  entreprises: {
+    label: "Entreprise & Paramètres",
+    description: "Paramètres de la société, règles d'alerte et notifications",
+  },
+};
+
 export default function RolesPermissionsUsersPage() {
   const [activeTab, setActiveTab] = useState<"users" | "roles" | "permissions">("users");
 
@@ -620,20 +655,35 @@ export default function RolesPermissionsUsersPage() {
                   <div className="py-8 text-center text-xs text-[#78716C]">Aucune permission trouvée.</div>
                 ) : (
                   <div className="space-y-5">
-                    {Object.entries(groupedPermissions).map(([moduleName, perms]) => (
-                      <div key={moduleName} className="border border-[#E0DACB] rounded-xl overflow-hidden">
-                        {/* Module header */}
-                        <div className="bg-[#FAF8F2] px-4 py-2.5 border-b border-[#E0DACB] flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <div className="h-2 w-2 rounded-full bg-[#483C2C]" />
-                            <span className="font-bold text-xs text-[#1C1917] uppercase tracking-wider">
-                              {moduleName}
+                    {Object.entries(groupedPermissions).map(([moduleName, perms]) => {
+                      const modInfo = MODULE_CONFIG[moduleName] || {
+                        label: moduleName.charAt(0).toUpperCase() + moduleName.slice(1),
+                        description: "",
+                      };
+                      return (
+                        <div key={moduleName} className="border border-[#E0DACB] rounded-xl overflow-hidden shadow-2xs">
+                          {/* Module header */}
+                          <div className="bg-[#FAF8F2] px-4 py-3 border-b border-[#E0DACB] flex items-center justify-between">
+                            <div className="flex items-center gap-2.5">
+                              <div className="h-2.5 w-2.5 rounded-full bg-[#483C2C]" />
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-bold text-xs text-[#1C1917]">
+                                    {modInfo.label}
+                                  </span>
+                                  <span className="font-mono text-[10px] text-[#78716C] uppercase bg-white px-1.5 py-0.5 rounded border border-[#E0DACB]">
+                                    {moduleName}
+                                  </span>
+                                </div>
+                                {modInfo.description && (
+                                  <p className="text-[11px] text-[#78716C] mt-0.5">{modInfo.description}</p>
+                                )}
+                              </div>
+                            </div>
+                            <span className="text-[11px] font-semibold bg-white px-2.5 py-1 rounded-full border border-[#E0DACB] text-[#57534E]">
+                              {perms.length} permission{perms.length > 1 ? "s" : ""}
                             </span>
                           </div>
-                          <span className="text-[11px] font-semibold bg-white px-2 py-0.5 rounded-full border border-[#E0DACB] text-[#57534E]">
-                            {perms.length} permission{perms.length > 1 ? "s" : ""}
-                          </span>
-                        </div>
 
                         {/* Permission cards — read-only + assign button */}
                         <div className="p-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -682,7 +732,8 @@ export default function RolesPermissionsUsersPage() {
                           })}
                         </div>
                       </div>
-                    ))}
+                    );
+                  })}
                   </div>
                 )}
               </CardContent>
@@ -782,11 +833,16 @@ export default function RolesPermissionsUsersPage() {
                   <p className="text-xs text-[#78716C]">Aucune permission disponible dans le système.</p>
                 ) : (
                   <div className="space-y-3 max-h-56 overflow-y-auto border border-[#E0DACB] p-3 rounded-xl bg-[#FAF8F2]/30">
-                    {Object.entries(groupedPermissions).map(([modName, perms]) => (
-                      <div key={modName} className="space-y-1">
-                        <div className="text-[11px] font-bold text-[#1C1917] uppercase tracking-wider bg-[#FAF8F2] px-2 py-1 rounded">
-                          {modName}
-                        </div>
+                    {Object.entries(groupedPermissions).map(([modName, perms]) => {
+                      const modLabel = MODULE_CONFIG[modName]?.label || modName.toUpperCase();
+                      return (
+                        <div key={modName} className="space-y-1">
+                          <div className="text-[11px] font-bold text-[#1C1917] bg-[#FAF8F2] px-2 py-1 rounded flex items-center justify-between border border-[#E0DACB]/50">
+                            <span>{modLabel}</span>
+                            <span className="text-[10px] font-mono text-[#78716C] uppercase bg-white px-1.5 py-0.5 rounded border border-[#E0DACB]">
+                              {modName}
+                            </span>
+                          </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pl-2">
                           {perms.map((p) => (
                             <label key={p.id} className="flex items-center gap-2 text-xs cursor-pointer hover:bg-[#FAF8F2] p-1.5 rounded-lg border border-transparent hover:border-[#E0DACB]/60">
@@ -801,7 +857,8 @@ export default function RolesPermissionsUsersPage() {
                           ))}
                         </div>
                       </div>
-                    ))}
+                    );
+                  })}
                   </div>
                 )}
               </div>

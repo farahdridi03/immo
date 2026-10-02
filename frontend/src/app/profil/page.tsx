@@ -30,6 +30,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/context/AuthContext";
 import { authApi } from "@/services/api/auth";
+import { getMediaUrl } from "@/lib/utils";
 import type { Setup2FAResponse } from "@/types/api";
 
 export default function ProfilPage() {
@@ -249,7 +250,7 @@ export default function ProfilPage() {
           <div className="flex items-center gap-4">
             <div className="relative w-16 h-16 rounded-2xl bg-[#483C2C] text-white font-bold text-xl flex items-center justify-center shrink-0 shadow-2xs border border-[#E0DACB] overflow-hidden">
               {avatar ? (
-                <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
+                <img src={getMediaUrl(avatar)} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
                 initials
               )}
@@ -315,7 +316,7 @@ export default function ProfilPage() {
               <div className="p-4 rounded-xl bg-[#FAF8F2] border border-[#E0DACB] flex flex-col sm:flex-row items-center gap-6">
                 <div className="relative w-20 h-20 rounded-2xl border-2 border-dashed border-[#E0DACB] bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
                   {avatar ? (
-                    <img src={avatar} alt="Avatar Preview" className="w-full h-full object-cover" />
+                    <img src={getMediaUrl(avatar)} alt="Avatar Preview" className="w-full h-full object-cover" />
                   ) : (
                     <UserIcon className="w-8 h-8 text-[#A8A29E]" />
                   )}

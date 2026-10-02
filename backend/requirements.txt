@@ -9,6 +9,7 @@ psycopg[binary]>=3.2,<4.0
 
 # Security & CORS
 django-cors-headers>=4.4,<5.0
+whitenoise>=6.6.0,<7.0
 
 # Authentication & JWT
 PyJWT>=2.8,<3.0

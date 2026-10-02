@@ -12,7 +12,10 @@ from django.conf.urls.static import static
 
 from apps.core.urls import urlpatterns as core_urlpatterns
 
+from django.http import HttpResponse
+
 urlpatterns = [
+    path('favicon.ico', lambda request: HttpResponse(status=204)),
     path('', RedirectView.as_view(url='/admin/', permanent=False), name='index-redirect'),
     path('admin/', admin.site.urls),
     # Versioned API routes
@@ -28,6 +31,10 @@ urlpatterns = [
     path('api/', include('apps.maintenance.urls')),
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+from django.views.static import serve
+from django.urls import re_path
+
+urlpatterns += [
+    re_path(r"^media/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT}),
+]
 

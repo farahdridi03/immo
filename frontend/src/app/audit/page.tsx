@@ -37,7 +37,12 @@ export default function AuditPage() {
         search: search ? search : undefined,
       });
       if (Array.isArray(data)) {
-        setEntries(data);
+        // Exclude system admin changes from audit display
+        const tenantEntries = data.filter((e) => {
+          const qui = (e.qui || "").toLowerCase();
+          return !qui.includes("système") && !qui.includes("dridifarah1126@gmail.com");
+        });
+        setEntries(tenantEntries);
       }
     } catch (err) {
       console.error("Erreur chargement journal d'audit:", err);

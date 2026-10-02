@@ -23,6 +23,7 @@ import {
 import { PageContainer } from "@/components/layout/PageContainer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { getMediaUrl } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { entreprisesApi, departementsApi, usersApi } from "@/services/api/users";
@@ -252,7 +253,7 @@ export default function EntrepriseDetailPage({
           <div className="flex items-start gap-4">
             <div className="h-14 w-14 rounded-2xl bg-[#EAE3CE] text-[#1C1917] font-bold flex items-center justify-center text-2xl shrink-0 shadow-xs border border-[#E0DACB] overflow-hidden p-1">
               {entreprise.logo ? (
-                <img src={entreprise.logo} alt={entreprise.nom} className="w-full h-full object-contain rounded-xl" />
+                <img src={getMediaUrl(entreprise.logo)} alt={entreprise.nom} className="w-full h-full object-contain rounded-xl" />
               ) : (
                 <Building2 className="w-7 h-7 text-[#1C1917]" />
               )}

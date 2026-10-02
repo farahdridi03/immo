@@ -17,7 +17,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import Departement, Entreprise, Permission, Role, RolePermission, User, UserPreference
 from .permissions import CanManageUsers
-from .services import approve_entreprise, reject_entreprise
+from .services import approve_entreprise, reject_entreprise, approve_user, reject_user
 from .serializers import (
     ChangePasswordSerializer,
     CustomTokenObtainPairSerializer,
@@ -59,14 +59,16 @@ class MeView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        serializer = UserSerializer(request.user)
+        serializer = UserSerializer(request.user, context={"request": request})
         return Response(serializer.data)
 
     def patch(self, request):
-        serializer = UserProfileUpdateSerializer(request.user, data=request.data, partial=True)
+        serializer = UserProfileUpdateSerializer(
+            request.user, data=request.data, partial=True, context={"request": request}
+        )
         if serializer.is_valid():
             serializer.save()
-            return Response(UserSerializer(request.user).data)
+            return Response(UserSerializer(request.user, context={"request": request}).data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -435,6 +437,15 @@ class UserViewSet(viewsets.ModelViewSet):
 
         serializer.save(**save_kwargs)
 
+    def perform_update(self, serializer):
+        old_statut = serializer.instance.statut_compte
+        old_active = serializer.instance.is_active
+        user = serializer.save()
+        now_active = (user.statut_compte == User.STATUT_ACTIF and user.is_active)
+        was_inactive = (old_statut != User.STATUT_ACTIF or not old_active)
+        if was_inactive and now_active:
+            approve_user(user)
+
     def destroy(self, request, *args, **kwargs):
         user = self.get_object()
         if user.est_admin_entreprise and not request.user.is_superuser:
@@ -442,19 +453,19 @@ class UserViewSet(viewsets.ModelViewSet):
                 {"detail": "Le compte administrateur principal de l'entreprise ne peut pas être supprimé ou désactivé."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        user.statut_compte = User.STATUT_INACTIF
-        user.actif = False
-        user.is_active = False
-        user.save(update_fields=["statut_compte", "actif", "is_active"])
+        reject_user(user, motif_rejet="Compte désactivé par l'administrateur.")
         return Response({"detail": "Utilisateur désactivé avec succès."})
+
+    @action(detail=True, methods=["post"], url_path="approve")
+    def approve(self, request, pk=None):
+        user = self.get_object()
+        approve_user(user)
+        return Response({"detail": f"L'utilisateur '{user.username}' a été validé et activé avec succès."})
 
     @action(detail=True, methods=["post"], url_path="activate")
     def activate(self, request, pk=None):
         user = self.get_object()
-        user.statut_compte = User.STATUT_ACTIF
-        user.actif = True
-        user.is_active = True
-        user.save(update_fields=["statut_compte", "actif", "is_active"])
+        approve_user(user)
         return Response({"detail": "Utilisateur activé avec succès."})
 
     @action(detail=True, methods=["post"], url_path="deactivate")
@@ -465,8 +476,6 @@ class UserViewSet(viewsets.ModelViewSet):
                 {"detail": "Le compte administrateur principal de l'entreprise ne peut pas être désactivé."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        user.statut_compte = User.STATUT_INACTIF
-        user.actif = False
-        user.is_active = False
-        user.save(update_fields=["statut_compte", "actif", "is_active"])
+        motif = request.data.get("motif", "Désactivation du compte utilisateur.")
+        reject_user(user, motif_rejet=motif)
         return Response({"detail": "Utilisateur désactivé avec succès."})

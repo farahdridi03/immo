@@ -1,12 +1,14 @@
 import os
+import secrets
 from typing import Any
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
-from django.db import transaction
+from django.db import models, transaction
 from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import Departement, Entreprise, Permission, Role, RolePermission, User, UserPreference
+from .services import send_new_user_credentials_email
 
 
 import base64
@@ -22,14 +24,25 @@ class Base64ImageField(serializers.ImageField):
                 try:
                     format_str, imgstr = data.split(";base64,")
                     ext = format_str.split("/")[-1].split("+")[0]
-                    data = ContentFile(base64.b64decode(imgstr), name=f"logo.{ext}")
+                    prefix = getattr(self, "field_name", "upload") or "upload"
+                    data = ContentFile(base64.b64decode(imgstr), name=f"{prefix}.{ext}")
                 except Exception:
                     raise serializers.ValidationError("Format d'image invalide.")
             elif data.startswith("http") or data.startswith("/"):
+                field_name = getattr(self, "field_name", "avatar")
                 if self.parent and hasattr(self.parent, "instance") and self.parent.instance:
-                    return self.parent.instance.logo
+                    return getattr(self.parent.instance, field_name, None)
                 return None
         return super().to_internal_value(data)
+
+    def to_representation(self, value):
+        if not value:
+            return None
+        url = getattr(value, "url", str(value))
+        request = self.context.get("request") if hasattr(self, "context") and self.context else None
+        if request:
+            return request.build_absolute_uri(url)
+        return url
 
 
 class EntrepriseSerializer(serializers.ModelSerializer):
@@ -272,36 +285,15 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         raw_password = validated_data.pop("password", None)
+        if not raw_password:
+            raw_password = secrets.token_urlsafe(9)
+
         user = User(**validated_data)
-        if raw_password:
-            user.set_password(raw_password)
+        user.set_password(raw_password)
         user.save()
 
         if user.email:
-            app_url = os.getenv("FRONTEND_URL", "http://localhost:3000/login")
-            entreprise_name = user.entreprise.nom if user.entreprise else "GestImmo"
-            subject = f"Vos identifiants d'accès - {entreprise_name}"
-            password_display = raw_password or "(défini par l'administrateur)"
-            message = (
-                f"Bonjour {user.first_name or user.username},\n\n"
-                f"Un compte utilisateur vous a été créé sur la plateforme GestImmo pour l'entreprise '{entreprise_name}'.\n\n"
-                f"Voici vos identifiants de connexion :\n"
-                f"• Lien de l'application : {app_url}\n"
-                f"• Nom d'utilisateur : {user.username}\n"
-                f"• Mot de passe : {password_display}\n\n"
-                f"Cordialement,\n"
-                f"L'équipe GestImmo"
-            )
-            try:
-                send_mail(
-                    subject=subject,
-                    message=message,
-                    from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@gestimmo.tn"),
-                    recipient_list=[user.email],
-                    fail_silently=True,
-                )
-            except Exception:
-                pass
+            send_new_user_credentials_email(user, raw_password=raw_password)
 
         return user
 
@@ -422,30 +414,42 @@ class RegisterSerializer(serializers.Serializer):
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        login_identifier = (attrs.get(self.username_field) or "").strip()
+        user_match = User.objects.filter(
+            models.Q(username__iexact=login_identifier) | models.Q(email__iexact=login_identifier)
+        ).first()
+
+        if user_match:
+            attrs[self.username_field] = user_match.username
+
         try:
             data = super().validate(attrs)
         except AuthenticationFailed as exc:
-            # If user exists but is not active, provide clear status detail if possible
-            username = attrs.get(self.username_field)
-            user_qs = User.objects.filter(**{self.username_field: username})
-            if user_qs.exists():
-                user = user_qs.first()
-                if isinstance(user, User):
-                    entreprise = user.entreprise
-                    if entreprise and entreprise.statut_validation == Entreprise.STATUT_EN_ATTENTE:
-                        raise AuthenticationFailed(
-                            "Votre entreprise est en attente de validation par l'administrateur de la plateforme."
-                        )
-                    if entreprise and entreprise.statut_validation == Entreprise.STATUT_REJETE:
-                        motif = entreprise.motif_rejet or "Non spécifié"
-                        raise AuthenticationFailed(
-                            f"Votre demande d'inscription a été rejetée. Motif : {motif}"
-                        )
-                    if user.statut_compte == User.STATUT_EN_ATTENTE:
-                        raise AuthenticationFailed(
-                            "Votre compte est en attente de validation."
-                        )
-            raise exc
+            if user_match:
+                entreprise = user_match.entreprise
+                if entreprise and entreprise.statut_validation == Entreprise.STATUT_EN_ATTENTE:
+                    raise AuthenticationFailed(
+                        "Votre entreprise est en attente de validation par l'administrateur de la plateforme."
+                    )
+                if entreprise and entreprise.statut_validation == Entreprise.STATUT_REJETE:
+                    motif = entreprise.motif_rejet or "Non spécifié"
+                    raise AuthenticationFailed(
+                        f"Votre demande d'inscription a été rejetée. Motif : {motif}"
+                    )
+                if user_match.statut_compte == User.STATUT_EN_ATTENTE:
+                    raise AuthenticationFailed(
+                        "Votre compte est en attente de validation."
+                    )
+                if not user_match.is_active or user_match.statut_compte != User.STATUT_ACTIF:
+                    raise AuthenticationFailed(
+                        "Votre compte utilisateur est inactif ou désactivé."
+                    )
+                raise AuthenticationFailed(
+                    "Mot de passe incorrect. Veuillez vérifier votre saisie."
+                )
+            raise AuthenticationFailed(
+                "Aucun compte trouvé avec cet identifiant ou cette adresse email."
+            )
 
         user = self.user
         if isinstance(user, User):

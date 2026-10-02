@@ -8,6 +8,7 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getMediaUrl } from "@/lib/utils";
 import { entreprisesApi } from "@/services/api/users";
 import type { Entreprise } from "@/types/api";
 
@@ -134,7 +135,7 @@ export default function EditerEntreprisePage({
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-xl bg-[#EAE3CE] text-[#1C1917] font-bold flex items-center justify-center shrink-0 shadow-2xs border border-[#E0DACB] overflow-hidden p-1">
               {logo ? (
-                <img src={logo} alt="Logo" className="w-full h-full object-contain rounded-lg" />
+                <img src={getMediaUrl(logo)} alt="Logo" className="w-full h-full object-contain rounded-lg" />
               ) : (
                 <Building2 className="w-6 h-6 text-[#1C1917]" />
               )}
@@ -172,7 +173,7 @@ export default function EditerEntreprisePage({
               <div className="p-4 rounded-xl bg-[#FAF8F2] border border-[#E0DACB] flex flex-col sm:flex-row items-center gap-6">
                 <div className="relative w-20 h-20 rounded-2xl border-2 border-dashed border-[#E0DACB] bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
                   {logo ? (
-                    <img src={logo} alt="Logo" className="w-full h-full object-contain p-1" />
+                    <img src={getMediaUrl(logo)} alt="Logo" className="w-full h-full object-contain p-1" />
                   ) : (
                     <Building2 className="w-8 h-8 text-[#A8A29E]" />
                   )}

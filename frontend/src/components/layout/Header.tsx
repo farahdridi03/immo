@@ -8,6 +8,7 @@ import { entreprisesApi } from "@/services/api/users";
 import { alertesApi } from "@/services/api/maintenance";
 import { useRealtimeAlerts } from "@/hooks/useRealtimeAlerts";
 import { QrScannerModal } from "@/components/ui/QrScannerModal";
+import { getMediaUrl } from "@/lib/utils";
 import type { Alerte, Entreprise } from "@/types/api";
 
 export function Header() {
@@ -267,7 +268,7 @@ export function Header() {
           >
             <div className="h-9 w-9 rounded-full bg-[#483C2C] text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0 group-hover:scale-105 transition-transform overflow-hidden">
               {user?.avatar ? (
-                <img src={user.avatar} alt={userName} className="w-full h-full object-cover" />
+                <img src={getMediaUrl(user.avatar)} alt={userName} className="w-full h-full object-cover" />
               ) : (
                 initials
               )}
