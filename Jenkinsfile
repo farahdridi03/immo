@@ -70,9 +70,34 @@ pipeline {
             }
         }
 
-        stage('Docker - Build') {
+        stage('Docker - Build & Push') {
             steps {
-                sh 'docker compose build'
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub',
+                        usernameVariable: 'DOCKER_USERNAME',
+                        passwordVariable: 'DOCKER_PASSWORD'
+                    )
+                ]) {
+                    sh '''
+                        echo "$DOCKER_PASSWORD" | docker login \
+                            --username "$DOCKER_USERNAME" \
+                            --password-stdin
+
+                        docker compose build
+
+                        docker tag immo-backend:latest \
+                            "$DOCKER_USERNAME/immo-backend:latest"
+
+                        docker tag immo-frontend:latest \
+                            "$DOCKER_USERNAME/immo-frontend:latest"
+
+                        docker push "$DOCKER_USERNAME/immo-backend:latest"
+                        docker push "$DOCKER_USERNAME/immo-frontend:latest"
+
+                        docker logout
+                    '''
+                }
             }
         }
     }
